@@ -2,11 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle, ChevronRight, Loader2, Play, RefreshCw, XCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Button } from '@/components/ui/Button';
+import { AIChat } from '@/components/chat/AIChat';
+import { FreeTextWithAIEval } from '@/components/assessment/FreeTextWithAIEval';
 import { getStageResources } from '@/data/content/index';
 import { generateScenario } from '@/services/scenarioGenerator';
 import { useBlockSessionStore } from '@/stores/blockSessionStore';
 import { useProgressStore } from '@/stores/progressStore';
-import type { GeneratedScenario, GeneratedQuestion, StageNumber } from '@/types/content';
+import type { GeneratedScenario, GeneratedQuestion, StageNumber, BlockId } from '@/types/content';
 
 interface StageViewProps {
   topicId: string;
@@ -40,6 +42,7 @@ export const StageView: React.FC<StageViewProps> = ({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [showExplanations, setShowExplanations] = useState(false);
   const [freeTextResponse, setFreeTextResponse] = useState('');
+  const [freeTextPassed, setFreeTextPassed] = useState(false);
 
   // Ensure we have a block session running
   useEffect(() => {
@@ -93,8 +96,8 @@ export const StageView: React.FC<StageViewProps> = ({
 
   const totalQuestions = scenario?.questions.length ?? 0;
   const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-  const stageGatePass = resources ? scorePercent >= resources.template.stageGate.minCorrectPercent : false;
   const isFreeTextStage = scenario?.taskData.type === 'free-text';
+  const stageGatePass = resources ? (isFreeTextStage ? freeTextPassed : scorePercent >= resources.template.stageGate.minCorrectPercent) : false;
 
   const handleViewResults = () => {
     setPhase('results');
@@ -129,6 +132,7 @@ export const StageView: React.FC<StageViewProps> = ({
     setSelectedAnswers({});
     setShowExplanations(false);
     setFreeTextResponse('');
+    setFreeTextPassed(false);
     setPhase('brief');
   };
 
@@ -259,8 +263,21 @@ export const StageView: React.FC<StageViewProps> = ({
       {/* ── Phase: Task (Questions) ──────── */}
       {phase === 'task' && (
         <div className="space-y-6">
-          {/* Free-text area for Stage 4 */}
-          {isFreeTextStage && (
+          {/* AI-evaluated free-text for Stage 4 */}
+          {isFreeTextStage && scenario.taskData.evaluationRubric && (
+            <FreeTextWithAIEval
+              blockId={resources.blockId}
+              scenarioBrief={scenario.scenarioBrief}
+              rubric={scenario.taskData.evaluationRubric}
+              onComplete={(passed) => {
+                setFreeTextPassed(passed);
+                handleViewResults();
+              }}
+            />
+          )}
+
+          {/* Fallback: plain free-text if no rubric (shouldn't happen for Stage 4) */}
+          {isFreeTextStage && !scenario.taskData.evaluationRubric && (
             <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <h3 className="text-lg font-bold text-slate-900 mb-3">Your Response</h3>
               <textarea
@@ -368,6 +385,15 @@ export const StageView: React.FC<StageViewProps> = ({
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
+      )}
+
+      {/* AI Learning Assistant — visible during all phases except bridge */}
+      {phase !== 'bridge' && scenario && (
+        <AIChat
+          blockId={resources.blockId as BlockId}
+          stageNumber={resources.stageNumber}
+          scenarioBrief={scenario.scenarioBrief}
+        />
       )}
     </div>
   );
