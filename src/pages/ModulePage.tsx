@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { BookOpen, ChevronRight } from 'lucide-react';
 import { MODULES } from '@/data/modules';
 import { NotFoundPage } from '@/pages/NotFoundPage';
@@ -7,18 +7,16 @@ import { NotFoundPage } from '@/pages/NotFoundPage';
 export const ModulePage: React.FC = () => {
   const { moduleId } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const userRole = searchParams.get('role') || 'student';
   const module = MODULES.find(m => m.id === moduleId);
 
   if (!module) return <NotFoundPage />;
 
   const handleSelectTopic = (topicId: string) => {
-    navigate(`/topic/${topicId}?role=${userRole}`);
+    navigate(`/topic/${topicId}`);
   };
 
   const handleBackToDashboard = () => {
-    navigate(`/dashboard?role=${userRole}`);
+    navigate('/dashboard');
   };
 
   return (

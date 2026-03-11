@@ -1,12 +1,12 @@
 import React from 'react';
 import { MODULES } from '@/data/modules';
 import { Module } from '@/types';
+import { useUserStore } from '@/stores/userStore';
 import { Calculator, TrendingUp, Briefcase, Cpu, ArrowRight } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface DashboardProps {
   onSelectModule: (module: Module) => void;
-  userRole: 'student' | 'lecturer';
 }
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -30,7 +30,8 @@ const bgMap: Record<string, string> = {
     fintech: "bg-pink-50 text-pink-600 group-hover:bg-pink-500 group-hover:text-white"
 };
 
-export const Dashboard: React.FC<DashboardProps> = ({ onSelectModule, userRole }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onSelectModule }) => {
+  const userRole = useUserStore(s => s.role) ?? 'student';
   return (
     <div className="max-w-7xl mx-auto animate-in fade-in duration-500">
       <div className="mb-12 text-center md:text-left">

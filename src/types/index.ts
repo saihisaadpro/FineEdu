@@ -1,4 +1,4 @@
-export type Role = 'student' | 'lecturer';
+export type Role = 'guest' | 'student' | 'pin_learner' | 'facilitator' | 'lecturer' | 'admin';
 
 export type ModuleId = 'accounting' | 'investment' | 'management' | 'fintech';
 

@@ -1,12 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { ChevronRight, Layout, ShieldCheck, Target, Users } from 'lucide-react';
+import { useUserStore } from '@/stores/userStore';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const setRole = useUserStore(s => s.setRole);
 
   const handleLogin = (role: 'student' | 'lecturer') => {
-    navigate(`/dashboard?role=${role}`);
+    setRole(role);
+    navigate('/dashboard');
   };
 
   return (

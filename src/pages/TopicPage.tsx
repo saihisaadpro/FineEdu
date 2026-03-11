@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router';
+import React, { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router';
 import { MODULES } from '@/data/modules';
 import { buildInitialTestBanks } from '@/data/content';
 import { TopicDetail } from '@/components/topic/TopicDetail';
-import { Question } from '@/types';
+import { useUserStore } from '@/stores/userStore';
+import { useContentStore } from '@/stores/contentStore';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export const TopicPage: React.FC = () => {
   const { topicId } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const userRole = (searchParams.get('role') as 'student' | 'lecturer') || 'student';
+  const userRole = useUserStore(s => s.role) ?? 'student';
+  const testBanks = useContentStore(s => s.testBanks);
+  const initTestBanks = useContentStore(s => s.initTestBanks);
+  const updateTestBank = useContentStore(s => s.updateTestBank);
+
+  // Initialize test banks once
+  useEffect(() => {
+    if (Object.keys(testBanks).length === 0) {
+      initTestBanks(buildInitialTestBanks(MODULES));
+    }
+  }, [testBanks, initTestBanks]);
 
   // Find the module and topic
   let foundModule = null;
@@ -24,22 +34,20 @@ export const TopicPage: React.FC = () => {
     }
   }
 
-  const [testBanks, setTestBanks] = useState<Record<string, Question[]>>(() => buildInitialTestBanks(MODULES));
-
   if (!foundModule || !foundTopic) return <NotFoundPage />;
 
   const currentTestBank = testBanks[foundTopic.id] || [];
 
-  const handleUpdateTestBank = (questions: Question[]) => {
-    setTestBanks(prev => ({ ...prev, [foundTopic!.id]: questions }));
+  const handleUpdateTestBank = (questions: typeof currentTestBank) => {
+    updateTestBank(foundTopic!.id, questions);
   };
 
   const handleBack = () => {
-    navigate(`/module/${foundModule!.id}?role=${userRole}`);
+    navigate(`/module/${foundModule!.id}`);
   };
 
   const handleStartAssessment = (difficulty: 'easy' | 'medium' | 'hard') => {
-    navigate(`/topic/${topicId}/assessment?role=${userRole}&difficulty=${difficulty}`);
+    navigate(`/topic/${topicId}/assessment?difficulty=${difficulty}`);
   };
 
   return (

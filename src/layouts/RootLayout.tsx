@@ -4,10 +4,13 @@ import { BookOpen, ChevronRight, Layout, LogOut, UserCircle2 } from 'lucide-reac
 import { clsx } from 'clsx';
 import { MODULES } from '@/data/modules';
 import { Module, Topic } from '@/types';
+import { useUserStore } from '@/stores/userStore';
 
 export const RootLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const userRole = useUserStore(s => s.role);
+  const logout = useUserStore(s => s.logout);
 
   // Derive current module and topic from URL
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -28,23 +31,20 @@ export const RootLayout: React.FC = () => {
     }
   }
 
-  const isLoggedIn = location.pathname !== '/';
+  const isLoggedIn = location.pathname !== '/' && userRole !== null;
   const isAssessment = pathParts[2] === 'assessment';
 
-  // Determine display role from query params or default
-  const searchParams = new URLSearchParams(location.search);
-  const userRole = searchParams.get('role') as 'student' | 'lecturer' | null;
-
   const handleLogout = () => {
+    logout();
     navigate('/');
   };
 
   const handleBackToDashboard = () => {
-    navigate(`/dashboard${userRole ? `?role=${userRole}` : ''}`);
+    navigate('/dashboard');
   };
 
   const handleSelectTopic = (topic: Topic) => {
-    navigate(`/topic/${topic.id}${userRole ? `?role=${userRole}` : ''}`);
+    navigate(`/topic/${topic.id}`);
   };
 
   // Don't show chrome on login page or during assessment
