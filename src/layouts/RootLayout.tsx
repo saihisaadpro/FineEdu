@@ -1,16 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
-import { BookOpen, ChevronRight, Layout, LogOut, UserCircle2 } from 'lucide-react';
+import { BookOpen, ChevronRight, Layout, LogOut, Save, UserCircle2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { MODULES } from '@/data/modules';
 import { Module, Topic } from '@/types';
 import { useUserStore } from '@/stores/userStore';
+import { useAuth } from '@/hooks/useAuth';
+import { SavePinDialog } from '@/components/ui/SavePinDialog';
+import { signOut } from '@/services/auth';
 
 export const RootLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const userRole = useUserStore(s => s.role);
+  const isAnonymous = useUserStore(s => s.isAnonymous);
   const logout = useUserStore(s => s.logout);
+  const [showSavePin, setShowSavePin] = useState(false);
+
+  // Initialise Supabase auth session (creates anonymous user on first visit)
+  useAuth();
 
   // Derive current module and topic from URL
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -34,7 +42,8 @@ export const RootLayout: React.FC = () => {
   const isLoggedIn = location.pathname !== '/' && userRole !== null;
   const isAssessment = pathParts[2] === 'assessment';
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut();
     logout();
     navigate('/');
   };
@@ -124,6 +133,12 @@ export const RootLayout: React.FC = () => {
               <p className="text-sm font-bold text-slate-900 capitalize truncate">{userRole === 'lecturer' ? 'Facilitator' : 'Learner'}</p>
               <p className="text-xs text-slate-500 truncate">Session Active</p>
             </div>
+            {/* Save Progress button – only for anonymous learners */}
+            {isAnonymous && (
+              <button type="button" onClick={() => setShowSavePin(true)} className="p-2 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-lg transition-colors" title="Save Progress">
+                <Save className="w-4 h-4" />
+              </button>
+            )}
             <button type="button" onClick={handleLogout} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors" title="Logout">
               <LogOut className="w-4 h-4" />
             </button>
@@ -139,13 +154,23 @@ export const RootLayout: React.FC = () => {
             </div>
             <span className="font-bold text-lg text-slate-900">WorkReady</span>
           </div>
-          <button type="button" onClick={handleLogout} className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1.5 rounded-lg">
-            Logout
-          </button>
+          <div className="flex items-center gap-2">
+            {isAnonymous && (
+              <button type="button" onClick={() => setShowSavePin(true)} className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg">
+                Save
+              </button>
+            )}
+            <button type="button" onClick={handleLogout} className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1.5 rounded-lg">
+              Logout
+            </button>
+          </div>
         </div>
 
         <Outlet />
       </main>
+
+      {/* PIN save dialog for anonymous learners */}
+      <SavePinDialog open={showSavePin} onClose={() => setShowSavePin(false)} />
     </div>
   );
 };

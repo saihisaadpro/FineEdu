@@ -1,15 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { ChevronRight, Layout, ShieldCheck, Target, Users } from 'lucide-react';
+import { ChevronRight, KeyRound, Layout, ShieldCheck, Target, Users } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const setRole = useUserStore(s => s.setRole);
 
-  const handleLogin = (role: 'student' | 'lecturer') => {
-    setRole(role);
+  const handleLearnerEntry = () => {
+    // useAuth hook has already created an anonymous Supabase session on app load.
+    // We just need to assign the learner role and navigate.
+    setRole('student');
     navigate('/dashboard');
+  };
+
+  const handleFacilitatorEntry = () => {
+    navigate('/login');
   };
 
   return (
@@ -68,7 +74,7 @@ export const LandingPage: React.FC = () => {
           <div className="space-y-4">
             <button
               type="button"
-              onClick={() => handleLogin('student')}
+              onClick={handleLearnerEntry}
               className="group w-full py-4 px-6 bg-slate-900 hover:bg-blue-600 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-between"
             >
               <div className="text-left">
@@ -79,7 +85,7 @@ export const LandingPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => handleLogin('lecturer')}
+              onClick={handleFacilitatorEntry}
               className="group w-full py-4 px-6 bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600 rounded-xl font-semibold transition-all flex items-center justify-between hover:shadow-md"
             >
               <div className="text-left">
@@ -90,7 +96,18 @@ export const LandingPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={() => navigate('/resume')}
+              className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-blue-600 transition-colors"
+            >
+              <KeyRound className="w-4 h-4" />
+              Resume a previous session with PIN
+            </button>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-slate-100 text-center">
             <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">Local Scenario-Based Learning</p>
           </div>
         </div>
