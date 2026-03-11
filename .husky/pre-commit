@@ -1,0 +1,8 @@
+#!/bin/sh
+# Prevent committing .env files
+if git diff --cached --name-only | grep -q '\.env'; then
+  echo "ERROR: Attempting to commit .env file. Remove it with: git reset HEAD .env"
+  exit 1
+fi
+# Type check
+npx tsc --noEmit
