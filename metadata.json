@@ -1,0 +1,7 @@
+{
+  "name": "WorkReady Finance",
+  "description": "A community-facing, gamified digital resource designed to translate financial expertise into practical knowledge exchange and measurable social impact.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
