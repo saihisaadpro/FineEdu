@@ -129,3 +129,21 @@ RULES:
 7. Reference the current scenario naturally — help the learner think through it, don't do the work for them.
 8. Be encouraging. Many learners are building financial confidence for the first time.`;
 };
+
+/**
+ * System prompt for Haiku 4.5 bridge narrative generation.
+ */
+export const buildBridgePrompt = (
+  blockName: string,
+  fromStage: number,
+  toStage: number,
+  previousScore: number,
+  previousStageName: string,
+): string => {
+  return `You are a workplace mentor in a financial literacy scenario. Write a brief 2-3 sentence bridge narrative connecting Stage ${fromStage} to Stage ${toStage} of the ${blockName} module.
+Reference the learner's previous performance: they scored ${previousScore}% on ${previousStageName}.
+Use the character voice specified in the scenario (manager, colleague, client).
+Keep it encouraging and contextual. Do not use bullet points.
+Write in plain English suitable for community learners (job seekers, career returners, adults at libraries and charities).
+Return ONLY the narrative text — no JSON, no markdown, no labels.`;
+};

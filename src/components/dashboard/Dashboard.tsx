@@ -4,6 +4,7 @@ import { Module } from '@/types';
 import { useUserStore } from '@/stores/userStore';
 import { Calculator, TrendingUp, Briefcase, Cpu, ArrowRight } from 'lucide-react';
 import { clsx } from 'clsx';
+import { BadgeShelf } from '@/components/gamification/BadgeShelf';
 
 interface DashboardProps {
   onSelectModule: (module: Module) => void;
@@ -34,8 +35,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectModule }) => {
   const userRole = useUserStore(s => s.role) ?? 'student';
   return (
     <div className="max-w-7xl mx-auto animate-in fade-in duration-500">
-      <div className="mb-12 text-center md:text-left">
-        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
+      <div className="mb-8 sm:mb-12 text-center md:text-left">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2 sm:mb-3">
             Welcome, {userRole === 'lecturer' ? 'Facilitator' : 'Learner'}
         </h1>
         <p className="text-lg text-slate-600 max-w-3xl">
@@ -43,7 +44,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectModule }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+      <div data-tour="module-cards" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
         {MODULES.map((module) => (
           <button
             key={module.id}
@@ -54,7 +55,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectModule }) => {
             {/* Top Border Gradient */}
             <div className={clsx("h-1.5 w-full bg-gradient-to-r", gradientMap[module.id] || "from-slate-400 to-slate-500")}></div>
             
-            <div className="p-8 flex-1 flex flex-col relative z-10">
+            <div className="p-5 sm:p-8 flex-1 flex flex-col relative z-10">
                 <div className="flex justify-between items-start mb-6">
                     <div className={clsx(
                         "w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3 shadow-sm",
@@ -81,6 +82,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectModule }) => {
           </button>
         ))}
       </div>
+
+      <BadgeShelf />
     </div>
   );
 };

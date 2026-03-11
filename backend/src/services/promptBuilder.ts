@@ -27,3 +27,14 @@ export const buildChatPrompt = (
   scenarioContext: string,
   xpLevel: string,
 ): string => activePrompts.buildChatPrompt(blockId, stageNumber, scenarioContext, xpLevel);
+
+/**
+ * Delegates to the active prompt version for bridge narrative prompts.
+ */
+export const buildBridgePrompt = (
+  blockName: string,
+  fromStage: number,
+  toStage: number,
+  previousScore: number,
+  previousStageName: string,
+): string => activePrompts.buildBridgePrompt(blockName, fromStage, toStage, previousScore, previousStageName);

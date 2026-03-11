@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { KeyRound, Copy, Check, X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { savePinSession } from '@/services/pinSession';
 import { useProgressStore } from '@/stores/progressStore';
@@ -28,8 +29,10 @@ export const SavePinDialog: React.FC<SavePinDialogProps> = ({ open, onClose }) =
       const result = await savePinSession({ xp, badges, topicProgress });
       setPin(result.pin);
       setUserPin(result.pin);
+      toast.success('Progress saved!', { description: 'Write down your PIN to resume later.' });
     } catch (err) {
       setError('Failed to save progress. Please try again.');
+      toast.error('Failed to save progress. Please try again.');
       console.error('Save PIN error:', err);
     } finally {
       setLoading(false);

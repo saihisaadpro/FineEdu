@@ -1,15 +1,38 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { ChevronRight, KeyRound, Layout, ShieldCheck, Target, Users } from 'lucide-react';
+import { BookOpen, ChevronRight, GraduationCap, KeyRound, Layout, Layers, Trophy, Users } from 'lucide-react';
+import { clsx } from 'clsx';
 import { useUserStore } from '@/stores/userStore';
+import { useInView } from '@/hooks/useInView';
+
+/* ── Scroll-reveal wrapper ─────────────────────────────────────────── */
+const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: string }> = ({
+  children,
+  className,
+  delay = '0ms',
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { threshold: 0.15 });
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        'transition-all duration-700 ease-out',
+        inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8',
+        className,
+      )}
+      style={{ transitionDelay: delay }}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const setRole = useUserStore(s => s.setRole);
 
   const handleLearnerEntry = () => {
-    // useAuth hook has already created an anonymous Supabase session on app load.
-    // We just need to assign the learner role and navigate.
     setRole('student');
     navigate('/dashboard');
   };
@@ -19,99 +42,208 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 relative overflow-hidden flex items-center justify-center p-4">
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-600/20 blur-3xl animate-pulse" />
-        <div className="absolute top-[40%] -right-[10%] w-[40%] h-[60%] rounded-full bg-indigo-600/20 blur-3xl" />
-        <div className="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] rounded-full bg-teal-600/20 blur-3xl" />
-      </div>
-
-      <div className="max-w-4xl w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 md:p-12 relative z-10 grid md:grid-cols-2 gap-12">
-        <div className="space-y-6">
-          <div>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-lg mb-6">
-              <Layout className="w-8 h-8" />
-            </div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              WorkReady Finance <span className="text-blue-600">(Finedu)</span>
-            </h1>
-            <p className="text-slate-500 mt-2 font-medium">UWE Bristol Knowledge Exchange Project</p>
-          </div>
-
-          <div className="prose prose-sm text-slate-600 leading-relaxed">
-            <p>
-              A community-facing, gamified digital resource designed to translate UWE Bristol&apos;s expertise in finance into practical knowledge exchange.
-            </p>
-            <div className="space-y-4 mt-4">
-              <div className="flex gap-3">
-                <Target className="w-5 h-5 text-blue-600 shrink-0" />
-                <span className="text-xs">
-                  <strong>Objective:</strong> Strengthen financial capability, work readiness, and economic inclusion among underserved groups.
-                </span>
-              </div>
-              <div className="flex gap-3">
-                <Users className="w-5 h-5 text-indigo-600 shrink-0" />
-                <span className="text-xs">
-                  <strong>Community Focused:</strong> Deployed through charities, libraries, and employability services across the Southwest.
-                </span>
-              </div>
-              <div className="flex gap-3">
-                <ShieldCheck className="w-5 h-5 text-teal-600 shrink-0" />
-                <span className="text-xs">
-                  <strong>Impact:</strong> Building confidence in managing income, pensions, tax, and digital financial tools.
-                </span>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-white">
+      {/* ── Hero Section ──────────────────────────────────────────── */}
+      <section data-tour="hero" className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white">
+        {/* Background blobs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-600/20 blur-3xl animate-pulse" />
+          <div className="absolute top-[40%] -right-[10%] w-[40%] h-[60%] rounded-full bg-indigo-600/20 blur-3xl" />
+          <div className="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] rounded-full bg-teal-600/15 blur-3xl" />
         </div>
 
-        <div className="flex flex-col justify-center border-l border-slate-100 pl-0 md:pl-12">
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Start Your Mission</h2>
-            <p className="text-sm text-slate-500">Enter the local learning dashboard and pick a finance topic to practise.</p>
-          </div>
-
-          <div className="space-y-4">
-            <button
-              type="button"
-              onClick={handleLearnerEntry}
-              className="group w-full py-4 px-6 bg-slate-900 hover:bg-blue-600 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-between"
-            >
-              <div className="text-left">
-                <span className="block text-sm opacity-80 font-normal">I am a Learner</span>
-                <span className="block text-lg">Enter Dashboard</span>
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 text-center">
+          {/* Logos */}
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                <Layout className="w-6 h-6 text-white" />
               </div>
-              <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" />
-            </button>
-            <button
-              type="button"
-              onClick={handleFacilitatorEntry}
-              className="group w-full py-4 px-6 bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600 rounded-xl font-semibold transition-all flex items-center justify-between hover:shadow-md"
-            >
-              <div className="text-left">
-                <span className="block text-sm opacity-60 font-normal">I am a Partner / Facilitator</span>
-                <span className="block text-lg">Manage Content</span>
+              <span className="text-sm font-bold tracking-tight">UWE Bristol</span>
+            </div>
+            <span className="text-xs bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full font-medium">
+              HEIF Funded
+            </span>
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-6">
+            Financial Literacy{' '}
+            <span className="bg-gradient-to-r from-blue-200 to-teal-200 bg-clip-text text-transparent">
+              for Everyone
+            </span>
+          </h1>
+          <p className="text-xl text-blue-200 max-w-2xl mx-auto mb-10">
+            AI-powered workplace scenarios. Built for community learning.
+          </p>
+
+          {/* Quick stats */}
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            {[
+              { icon: BookOpen, label: '4 Financial Modules' },
+              { icon: Layers, label: 'AI-Powered Scenarios' },
+              { icon: Users, label: 'Built for Community Learning' },
+            ].map(({ icon: Icon, label }) => (
+              <span
+                key={label}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium"
+              >
+                <Icon className="w-4 h-4 text-blue-300" />
+                {label}
+              </span>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleLearnerEntry}
+            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-900 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200"
+          >
+            Start Learning
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </section>
+
+      {/* ── Persona Cards ─────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+        <Reveal>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-4">
+            Who is WorkReady Finance for?
+          </h2>
+          <p className="text-slate-500 text-center max-w-xl mx-auto mb-12">
+            Whether you're a learner, a facilitator running sessions, or a module lead authoring content.
+          </p>
+        </Reveal>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: GraduationCap,
+              colour: 'bg-blue-50 text-blue-600',
+              title: 'Learner',
+              description: 'Explore financial scenarios at your own pace. No login needed.',
+              cta: 'Start Learning',
+              onClick: handleLearnerEntry,
+            },
+            {
+              icon: Users,
+              colour: 'bg-indigo-50 text-indigo-600',
+              title: 'Facilitator',
+              description: 'Monitor sessions and support learners in real-time at your venue.',
+              cta: 'Facilitator Login',
+              onClick: handleFacilitatorEntry,
+            },
+            {
+              icon: BookOpen,
+              colour: 'bg-teal-50 text-teal-600',
+              title: 'Module Lead',
+              description: 'Author scenarios and review learner outcomes across cohorts.',
+              cta: 'Module Lead Login',
+              onClick: handleFacilitatorEntry,
+            },
+          ].map((card, i) => (
+            <Reveal key={card.title} delay={`${i * 100}ms`}>
+              <div className="bg-white rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 p-8 flex flex-col items-center text-center h-full">
+                <div className={clsx('w-14 h-14 rounded-2xl flex items-center justify-center mb-5', card.colour)}>
+                  <card.icon className="w-7 h-7" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{card.title}</h3>
+                <p className="text-sm text-slate-500 mb-6 flex-1">{card.description}</p>
+                <button
+                  type="button"
+                  onClick={card.onClick}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  {card.cta}
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
-              <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors" />
-            </button>
-          </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={() => navigate('/resume')}
-              className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-blue-600 transition-colors"
-            >
-              <KeyRound className="w-4 h-4" />
-              Resume a previous session with PIN
-            </button>
-          </div>
+      {/* ── How It Works ──────────────────────────────────────────── */}
+      <section className="bg-slate-50 py-16 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center mb-12">
+              How It Works
+            </h2>
+          </Reveal>
 
-          <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">Local Scenario-Based Learning</p>
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {/* Connecting line (desktop) */}
+            <div className="hidden md:block absolute top-10 left-[16.5%] right-[16.5%] h-px border-t-2 border-dashed border-slate-300" />
+
+            {[
+              { icon: Layout, step: '1', title: 'Choose a Module', desc: 'Pick from 4 financial literacy modules — accounting, investment, management, or fintech.' },
+              { icon: Layers, step: '2', title: 'Work Through 4 Stages', desc: 'Each module has 4 scaffolded stages with AI-generated workplace scenarios.' },
+              { icon: Trophy, step: '3', title: 'Earn XP & Badges', desc: 'Track your progress, earn XP for correct answers, and collect achievement badges.' },
+            ].map((item, i) => (
+              <Reveal key={item.step} delay={`${i * 150}ms`}>
+                <div className="text-center relative">
+                  <div className="w-20 h-20 rounded-2xl bg-white shadow-md border border-slate-200 flex items-center justify-center mx-auto mb-5 relative z-10">
+                    <item.icon className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <span className="inline-block text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full mb-3">
+                    Step {item.step}
+                  </span>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
+                  <p className="text-sm text-slate-500 max-w-xs mx-auto">{item.desc}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* ── Partner Logos ──────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+        <Reveal>
+          <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest text-center mb-8">
+            Trusted by Community Partners
+          </h2>
+        </Reveal>
+        <Reveal delay="100ms">
+          <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12">
+            {['Smart Works', 'Women\'s Work Lab', 'One Front Door', 'Ways2Work'].map((partner) => (
+              <div
+                key={partner}
+                className="px-6 py-3 rounded-lg border border-slate-200 text-sm font-semibold text-slate-400 hover:text-slate-700 hover:border-slate-300 transition-colors"
+              >
+                {partner}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ── Resume session link ───────────────────────────────────── */}
+      <section className="text-center pb-8">
+        <button
+          type="button"
+          onClick={() => navigate('/resume')}
+          className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-blue-600 transition-colors"
+        >
+          <KeyRound className="w-4 h-4" />
+          Resume a previous session with PIN
+        </button>
+      </section>
+
+      {/* ── Footer ────────────────────────────────────────────────── */}
+      <footer className="border-t border-slate-200 bg-slate-50 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+          <p>A HEIF-funded initiative by UWE Bristol Accounting &amp; Finance &bull; &copy; 2026</p>
+          <button
+            type="button"
+            onClick={() => navigate('/privacy')}
+            className="hover:text-blue-600 transition-colors"
+          >
+            Privacy Policy
+          </button>
+        </div>
+      </footer>
     </div>
   );
 };

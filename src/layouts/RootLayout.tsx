@@ -1,24 +1,41 @@
-import React, { useState } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router';
-import { BookOpen, ChevronRight, Layout, LogOut, Save, UserCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Outlet, useNavigate, useLocation, useSearchParams } from 'react-router';
+import { BookOpen, ChevronRight, Layout, LayoutDashboard, LogOut, Save, UserCircle2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { MODULES } from '@/data/modules';
 import { Module, Topic } from '@/types';
 import { useUserStore } from '@/stores/userStore';
 import { useAuth } from '@/hooks/useAuth';
 import { SavePinDialog } from '@/components/ui/SavePinDialog';
+import { Toaster } from '@/components/ui/Toaster';
+import { ConsentBanner } from '@/components/ui/ConsentBanner';
+import { DemoOverlay } from '@/components/ui/DemoOverlay';
+import { PWAInstallBanner } from '@/components/ui/PWAInstallBanner';
 import { signOut } from '@/services/auth';
+import { XPBar } from '@/components/gamification/XPBar';
 
 export const RootLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const userRole = useUserStore(s => s.role);
   const isAnonymous = useUserStore(s => s.isAnonymous);
   const logout = useUserStore(s => s.logout);
   const [showSavePin, setShowSavePin] = useState(false);
+  const [demoActive, setDemoActive] = useState(false);
 
-  // Initialise Supabase auth session (creates anonymous user on first visit)
-  useAuth();
+  // Detect ?demo=true param
+  useEffect(() => {
+    if (searchParams.get('demo') === 'true') {
+      setDemoActive(true);
+      // Remove the param from URL without reload
+      searchParams.delete('demo');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // Initialise Supabase auth session (waits for GDPR consent before creating anonymous user)
+  const { initAnonymousSession } = useAuth();
 
   // Derive current module and topic from URL
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -58,13 +75,22 @@ export const RootLayout: React.FC = () => {
 
   // Don't show chrome on login page or during assessment
   if (!isLoggedIn) {
-    return <Outlet />;
+    return (
+      <>
+        <Outlet />
+        <ConsentBanner onConsent={initAnonymousSession} />
+        {demoActive && <DemoOverlay onEnd={() => setDemoActive(false)} />}
+        <PWAInstallBanner />
+        <Toaster />
+      </>
+    );
   }
 
   if (isAssessment) {
     return (
       <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
         <Outlet />
+        <Toaster />
       </div>
     );
   }
@@ -124,6 +150,28 @@ export const RootLayout: React.FC = () => {
           )}
         </div>
 
+        <div className="p-4 border-t border-slate-100 space-y-3">
+          {/* Facilitator dashboard link — visible only for facilitator/lecturer/admin */}
+          {(userRole === 'facilitator' || userRole === 'lecturer' || userRole === 'admin') && (
+            <button
+              type="button"
+              data-tour="facilitator-link"
+              onClick={() => navigate('/facilitator')}
+              className={clsx(
+                'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors',
+                location.pathname === '/facilitator'
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+              )}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              Facilitator Dashboard
+            </button>
+          )}
+          <div data-tour="xp-bar">
+            <XPBar />
+          </div>
+        </div>
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-3 p-2 rounded-xl bg-white border border-slate-200 shadow-sm">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600">
@@ -146,8 +194,8 @@ export const RootLayout: React.FC = () => {
         </div>
       </aside>
 
-      <main className="flex-1 md:ml-72 p-4 md:p-10 overflow-y-auto min-h-screen">
-        <div className="md:hidden flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+      <main className="flex-1 md:ml-72 px-4 py-4 sm:p-6 md:p-10 overflow-y-auto min-h-screen">
+        <div className="md:hidden flex justify-between items-center mb-6 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-100">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
               <Layout className="w-4 h-4" />
@@ -155,12 +203,13 @@ export const RootLayout: React.FC = () => {
             <span className="font-bold text-lg text-slate-900">WorkReady</span>
           </div>
           <div className="flex items-center gap-2">
+            <XPBar />
             {isAnonymous && (
-              <button type="button" onClick={() => setShowSavePin(true)} className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg">
+              <button type="button" onClick={() => setShowSavePin(true)} className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-2 rounded-lg min-h-[44px] flex items-center">
                 Save
               </button>
             )}
-            <button type="button" onClick={handleLogout} className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1.5 rounded-lg">
+            <button type="button" onClick={handleLogout} className="text-sm font-medium text-red-600 bg-red-50 px-3 py-2 rounded-lg min-h-[44px] flex items-center">
               Logout
             </button>
           </div>
@@ -171,6 +220,9 @@ export const RootLayout: React.FC = () => {
 
       {/* PIN save dialog for anonymous learners */}
       <SavePinDialog open={showSavePin} onClose={() => setShowSavePin(false)} />
+      {demoActive && <DemoOverlay onEnd={() => setDemoActive(false)} />}
+      <PWAInstallBanner />
+      <Toaster />
     </div>
   );
 };

@@ -28,11 +28,11 @@ export const ModulePage: React.FC = () => {
         <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide mb-3">
           Module Lead: {module.lead}
         </div>
-        <h1 className="text-4xl font-extrabold text-slate-900 mb-4">{module.title}</h1>
-        <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">{module.description}</p>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3 sm:mb-4">{module.title}</h1>
+        <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">{module.description}</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div data-tour="stage-list" className="grid gap-4 sm:grid-cols-2">
         {module.topics.map((topic, index) => (
           <button
             key={topic.id}

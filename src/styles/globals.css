@@ -67,6 +67,64 @@ body {
   to { transform: scale(1); opacity: 1; }
 }
 
+/* ── Mobile responsiveness utilities ──────────────────────────────── */
+
+/* Ensure all interactive elements meet 44px minimum touch target */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Fix viewport height on mobile Safari (100vh includes address bar) */
+@supports (height: 100dvh) {
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+}
+
+/* Print styles */
+@media print {
+  nav,
+  aside,
+  .no-print,
+  [role="dialog"],
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black;
+    font-size: 12pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  main {
+    margin: 0;
+    padding: 0;
+  }
+  .print-summary {
+    background: white !important;
+    min-height: auto;
+  }
+  .print-summary table {
+    page-break-inside: avoid;
+  }
+  .print-summary section {
+    break-inside: avoid;
+  }
+  @page {
+    margin: 1.5cm;
+    size: A4 portrait;
+  }
+}
+
 .animate-slide-up {
   animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

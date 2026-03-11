@@ -94,3 +94,10 @@ export const getStageResources = (topicId: string) => {
 
   return { template, variablePool, fallback, ...mapping };
 };
+
+/**
+ * Get all 4 stage templates for a block. Useful for the completion summary
+ * where we need to display pedagogical goals from each stage.
+ */
+export const getBlockTemplates = (blockId: BlockId): ScenarioTemplate[] =>
+  allTemplates.filter((t) => t.blockId === blockId);

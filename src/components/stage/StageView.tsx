@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle, ChevronRight, Loader2, Play, RefreshCw, XCircle } from 'lucide-react';
 import { clsx } from 'clsx';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { AIChat } from '@/components/chat/AIChat';
 import { FreeTextWithAIEval } from '@/components/assessment/FreeTextWithAIEval';
@@ -8,6 +9,11 @@ import { getStageResources } from '@/data/content/index';
 import { generateScenario } from '@/services/scenarioGenerator';
 import { useBlockSessionStore } from '@/stores/blockSessionStore';
 import { useProgressStore } from '@/stores/progressStore';
+import { StageProgressArc } from '@/components/stage/StageProgressArc';
+import { BridgeNarrative } from '@/components/stage/BridgeNarrative';
+import { BadgePopup } from '@/components/gamification/BadgePopup';
+import { checkAndAwardBadges } from '@/services/badgeChecker';
+import { useGateOverrideStore } from '@/stores/gateOverrideStore';
 import type { GeneratedScenario, GeneratedQuestion, StageNumber, BlockId } from '@/types/content';
 
 interface StageViewProps {
@@ -21,6 +27,8 @@ interface StageViewProps {
 /** XP per correct answer */
 const XP_PER_CORRECT = 10;
 const XP_STAGE_BONUS = 25;
+const XP_BONUS_80 = 10;
+const XP_BONUS_100 = 20;
 
 export const StageView: React.FC<StageViewProps> = ({
   topicId,
@@ -43,6 +51,7 @@ export const StageView: React.FC<StageViewProps> = ({
   const [showExplanations, setShowExplanations] = useState(false);
   const [freeTextResponse, setFreeTextResponse] = useState('');
   const [freeTextPassed, setFreeTextPassed] = useState(false);
+  const [pendingBadge, setPendingBadge] = useState<string | null>(null);
 
   // Ensure we have a block session running
   useEffect(() => {
@@ -85,6 +94,7 @@ export const StageView: React.FC<StageViewProps> = ({
 
   const handleSubmitAnswers = () => {
     setShowExplanations(true);
+    toast.info('Assessment submitted — review your answers below.');
   };
 
   const correctCount = useMemo(() => {
@@ -97,7 +107,9 @@ export const StageView: React.FC<StageViewProps> = ({
   const totalQuestions = scenario?.questions.length ?? 0;
   const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
   const isFreeTextStage = scenario?.taskData.type === 'free-text';
-  const stageGatePass = resources ? (isFreeTextStage ? freeTextPassed : scorePercent >= resources.template.stageGate.minCorrectPercent) : false;
+  const gateOverride = useGateOverrideStore((s) => s.enabled);
+  const naturalPass = resources ? (isFreeTextStage ? freeTextPassed : scorePercent >= resources.template.stageGate.minCorrectPercent) : false;
+  const stageGatePass = naturalPass || gateOverride;
 
   const handleViewResults = () => {
     setPhase('results');
@@ -105,7 +117,9 @@ export const StageView: React.FC<StageViewProps> = ({
 
   const handleCompleteStage = () => {
     if (!resources || !scenario) return;
-    const xpEarned = correctCount * XP_PER_CORRECT + (stageGatePass ? XP_STAGE_BONUS : 0);
+    let xpEarned = correctCount * XP_PER_CORRECT + (stageGatePass ? XP_STAGE_BONUS : 0);
+    if (scorePercent >= 100) xpEarned += XP_BONUS_100;
+    else if (scorePercent >= 80) xpEarned += XP_BONUS_80;
     addXP(xpEarned);
     updateTopicProgress(topicId, {
       completed: stageGatePass,
@@ -114,6 +128,16 @@ export const StageView: React.FC<StageViewProps> = ({
       completedAt: stageGatePass ? new Date().toISOString() : null,
     });
     completeStage(resources.stageNumber, scenario.variablesUsed, xpEarned);
+
+    // Check badges after state updates
+    const newBadges = checkAndAwardBadges();
+    if (newBadges.length > 0) {
+      setPendingBadge(newBadges[0]);
+    }
+
+    toast.success(`+${xpEarned} XP earned!`, {
+      description: `Stage ${resources.stageNumber} complete — ${scorePercent}% score`,
+    });
     setPhase('bridge');
   };
 
@@ -161,7 +185,7 @@ export const StageView: React.FC<StageViewProps> = ({
   const stageLabel = `Stage ${resources.stageNumber} of 4`;
 
   return (
-    <div className="max-w-4xl mx-auto animate-in fade-in duration-300 pb-10">
+    <div className="max-w-4xl mx-auto animate-in fade-in duration-300 pb-20 sm:pb-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <button
@@ -175,29 +199,15 @@ export const StageView: React.FC<StageViewProps> = ({
         <div className="text-sm font-semibold text-blue-600">{stageLabel}</div>
       </div>
 
-      {/* Stage progress bar */}
-      <div className="flex gap-2 mb-8">
-        {([1, 2, 3, 4] as StageNumber[]).map((s) => (
-          <div
-            key={s}
-            className={clsx(
-              'h-2 flex-1 rounded-full transition-colors',
-              s < resources.stageNumber
-                ? 'bg-emerald-500'
-                : s === resources.stageNumber
-                  ? 'bg-blue-600'
-                  : 'bg-slate-200',
-            )}
-          />
-        ))}
-      </div>
+      {/* Stage progress arc */}
+      <StageProgressArc currentStage={resources.stageNumber} />
 
-      <h1 className="text-3xl font-extrabold text-slate-900 mb-2">{resources.template.stageTitle}</h1>
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">{resources.template.stageTitle}</h1>
       <p className="text-slate-500 mb-8">{resources.template.pedagogicalGoal}</p>
 
       {/* ── Phase: Brief ─────────────────── */}
       {phase === 'brief' && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-tour="scenario-panel">
           <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <div className="flex items-center gap-2 mb-3 text-blue-600 text-sm font-bold uppercase tracking-wider">
               <BookOpen className="w-4 h-4" />
@@ -337,20 +347,27 @@ export const StageView: React.FC<StageViewProps> = ({
             ) : (
               <XCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
             )}
-            <h2 className="text-3xl font-extrabold mb-1">
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-1">
               {correctCount}/{totalQuestions} Correct ({scorePercent}%)
             </h2>
             <p className={clsx('text-sm font-medium', stageGatePass ? 'text-emerald-700' : 'text-red-600')}>
               {stageGatePass
-                ? `Stage passed! You earned ${correctCount * XP_PER_CORRECT + XP_STAGE_BONUS} XP.`
+                ? `Stage passed! Great work.`
                 : `You need ${resources.template.stageGate.minCorrectPercent}% to pass. Try again!`}
             </p>
           </section>
 
           {stageGatePass ? (
-            <Button onClick={handleCompleteStage} className="w-full justify-center" size="lg">
-              Continue <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+            <div className="space-y-3">
+              {gateOverride && !naturalPass && (
+                <div className="bg-amber-50 border border-amber-300 rounded-xl px-4 py-2 text-center text-xs font-semibold text-amber-700">
+                  Gate Override Active — stage gate bypassed by facilitator
+                </div>
+              )}
+              <Button onClick={handleCompleteStage} className="w-full justify-center" size="lg">
+                Continue <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
           ) : (
             <Button onClick={handleRetry} variant="secondary" className="w-full justify-center" size="lg">
               <RefreshCw className="w-4 h-4 mr-2" /> Retry Stage
@@ -362,14 +379,17 @@ export const StageView: React.FC<StageViewProps> = ({
       {/* ── Phase: Bridge Narrative ──────── */}
       {phase === 'bridge' && (
         <div className="space-y-6">
-          <section className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-8">
-            <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-3">
-              {resources.stageNumber === 4 ? 'Block Complete' : 'Next Stage Preview'}
-            </h3>
-            <p className="text-slate-700 leading-relaxed text-lg">{scenario.bridgeText}</p>
-          </section>
+          <BridgeNarrative
+            blockId={resources.blockId as import('@/types/content').BlockId}
+            fromStage={resources.stageNumber}
+            stageTitle={resources.template.stageTitle}
+            scorePercent={scorePercent}
+            fallbackText={scenario.bridgeText}
+            isBlockComplete={resources.stageNumber === 4}
+            onContinue={handleNextStage}
+          />
 
-          <div className="flex items-center justify-between bg-slate-900 rounded-2xl p-6 text-white">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900 rounded-2xl p-5 sm:p-6 text-white">
             <div>
               <p className="text-xs font-bold uppercase text-slate-400 tracking-wider">Session XP</p>
               <p className="text-2xl font-extrabold">{activeSession?.totalXP ?? 0} XP</p>
@@ -379,22 +399,22 @@ export const StageView: React.FC<StageViewProps> = ({
               <p className="text-2xl font-extrabold">{activeSession?.stagesCompleted.length ?? 0}/4</p>
             </div>
           </div>
-
-          <Button onClick={handleNextStage} className="w-full justify-center" size="lg">
-            {resources.stageNumber === 4 ? 'Finish Block' : 'Next Stage'}{' '}
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
         </div>
       )}
 
       {/* AI Learning Assistant — visible during all phases except bridge */}
       {phase !== 'bridge' && scenario && (
-        <AIChat
-          blockId={resources.blockId as BlockId}
-          stageNumber={resources.stageNumber}
-          scenarioBrief={scenario.scenarioBrief}
-        />
+        <div data-tour="ai-chat">
+          <AIChat
+            blockId={resources.blockId as BlockId}
+            stageNumber={resources.stageNumber}
+            scenarioBrief={scenario.scenarioBrief}
+          />
+        </div>
       )}
+
+      {/* Badge celebration popup */}
+      <BadgePopup badgeId={pendingBadge} onDismiss={() => setPendingBadge(null)} />
     </div>
   );
 };

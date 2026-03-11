@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router';
 import { RootLayout } from '@/layouts/RootLayout';
 import { AuthGuard } from '@/components/AuthGuard';
 import { LandingPage } from '@/pages/LandingPage';
-import { LoginPage } from '@/pages/LoginPage';
-import { DashboardPage } from '@/pages/DashboardPage';
-import { ModulePage } from '@/pages/ModulePage';
-import { TopicPage } from '@/pages/TopicPage';
-import { AssessmentPage } from '@/pages/AssessmentPage';
-import { PrivacyPage } from '@/pages/PrivacyPage';
-import { ResumePage } from '@/pages/ResumePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
+
+// Lazy-loaded routes — keeps the initial bundle small
+const LoginPage = lazy(() => import('@/pages/LoginPage').then(m => ({ default: m.LoginPage })));
+const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const ModulePage = lazy(() => import('@/pages/ModulePage').then(m => ({ default: m.ModulePage })));
+const TopicPage = lazy(() => import('@/pages/TopicPage').then(m => ({ default: m.TopicPage })));
+const AssessmentPage = lazy(() => import('@/pages/AssessmentPage').then(m => ({ default: m.AssessmentPage })));
+const PrivacyPage = lazy(() => import('@/pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const ResumePage = lazy(() => import('@/pages/ResumePage').then(m => ({ default: m.ResumePage })));
+const FacilitatorDashboardPage = lazy(() => import('@/pages/FacilitatorDashboardPage').then(m => ({ default: m.FacilitatorDashboardPage })));
+
+function LazyRoute({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" /></div>}>
+      {children}
+    </Suspense>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -19,18 +30,18 @@ export const router = createBrowserRouter([
     children: [
       /* ── Public routes ────────────────────── */
       { index: true, element: <LandingPage /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'resume', element: <ResumePage /> },
-      { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'login', element: <LazyRoute><LoginPage /></LazyRoute> },
+      { path: 'resume', element: <LazyRoute><ResumePage /></LazyRoute> },
+      { path: 'privacy', element: <LazyRoute><PrivacyPage /></LazyRoute> },
 
       /* ── Authenticated routes (any role) ──── */
       {
         element: <AuthGuard />,
         children: [
-          { path: 'dashboard', element: <DashboardPage /> },
-          { path: 'module/:moduleId', element: <ModulePage /> },
-          { path: 'topic/:topicId', element: <TopicPage /> },
-          { path: 'topic/:topicId/assessment', element: <AssessmentPage /> },
+          { path: 'dashboard', element: <LazyRoute><DashboardPage /></LazyRoute> },
+          { path: 'module/:moduleId', element: <LazyRoute><ModulePage /></LazyRoute> },
+          { path: 'topic/:topicId', element: <LazyRoute><TopicPage /></LazyRoute> },
+          { path: 'topic/:topicId/assessment', element: <LazyRoute><AssessmentPage /></LazyRoute> },
         ],
       },
 
@@ -38,7 +49,7 @@ export const router = createBrowserRouter([
       {
         element: <AuthGuard allowedRoles={['facilitator', 'lecturer', 'admin']} />,
         children: [
-          // Future facilitator-only pages go here
+          { path: 'facilitator', element: <LazyRoute><FacilitatorDashboardPage /></LazyRoute> },
         ],
       },
 
