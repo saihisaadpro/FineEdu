@@ -1,4 +1,4 @@
-ï»¿import type { GeneratedScenario } from '@/types/content';
+import type { GeneratedScenario } from '@/types/content';
 
 export const accountingFallbacks: GeneratedScenario[] = [
   {
@@ -6,18 +6,18 @@ export const accountingFallbacks: GeneratedScenario[] = [
     templateId: 'acc_stage_1',
     blockId: 'accounting',
     stageNumber: 1,
-    scenarioBrief: `You've just started as an accounting assistant at Bristol Bakes Ltd, a small bakery and cafe near the harbour. Your manager Sarah has handed you a stack of this week's financial documents â€” invoices, receipts, and bank statements â€” and asked you to sort them into the right categories. One document doesn't look quite right.`,
+    scenarioBrief: `You've just started as an accounting assistant at Bristol Bakes Ltd, a small bakery and cafe near the harbour. Your manager Sarah has handed you a stack of this week's financial documents — invoices, receipts, and bank statements — and asked you to sort them into the right categories. One document doesn't look quite right.`,
     taskData: {
       type: 'sort',
       items: [
-        { id: 't1', label: 'Flour supplier invoice â€” Â£340', category: 'Expense' },
-        { id: 't2', label: 'Cafe till takings â€” Â£1,200', category: 'Income' },
-        { id: 't3', label: 'New oven purchase â€” Â£2,500', category: 'Asset' },
-        { id: 't4', label: 'Business rates payment â€” Â£180', category: 'Expense' },
-        { id: 't5', label: 'Catering order deposit received â€” Â£500', category: 'Income' },
-        { id: 't6', label: 'Amazon order â€” personal headphones â€” Â£45', category: 'Unusual' },
-        { id: 't7', label: 'Staff wages â€” Â£1,800', category: 'Expense' },
-        { id: 't8', label: 'Bank loan repayment â€” Â£400', category: 'Liability' },
+        { id: 't1', label: 'Flour supplier invoice — £340', category: 'Expense' },
+        { id: 't2', label: 'Cafe till takings — £1,200', category: 'Income' },
+        { id: 't3', label: 'New oven purchase — £2,500', category: 'Asset' },
+        { id: 't4', label: 'Business rates payment — £180', category: 'Expense' },
+        { id: 't5', label: 'Catering order deposit received — £500', category: 'Income' },
+        { id: 't6', label: 'Amazon order — personal headphones — £45', category: 'Unusual' },
+        { id: 't7', label: 'Staff wages — £1,800', category: 'Expense' },
+        { id: 't8', label: 'Bank loan repayment — £400', category: 'Liability' },
       ],
     },
     questions: [
@@ -26,7 +26,7 @@ export const accountingFallbacks: GeneratedScenario[] = [
         text: 'Which of these is an example of business income?',
         options: ['Flour supplier invoice', 'Cafe till takings', 'Business rates payment', 'Bank loan repayment'],
         correctAnswerIndex: 1,
-        explanation: 'Cafe till takings represent money coming into the business from sales â€” this is income.',
+        explanation: 'Cafe till takings represent money coming into the business from sales — this is income.',
         difficulty: 'easy',
       },
       {
@@ -34,7 +34,7 @@ export const accountingFallbacks: GeneratedScenario[] = [
         text: 'The flour supplier invoice represents money going out. This is an example of:',
         options: ['An asset', 'Income', 'An expense', 'A liability'],
         correctAnswerIndex: 2,
-        explanation: 'Paying a supplier for goods used in the business is an expense â€” money leaving the business for operating costs.',
+        explanation: 'Paying a supplier for goods used in the business is an expense — money leaving the business for operating costs.',
         difficulty: 'easy',
       },
       {
@@ -42,7 +42,7 @@ export const accountingFallbacks: GeneratedScenario[] = [
         text: 'One document is a personal expense paid from the business account. What should you do?',
         options: ['File it as a normal expense', 'Flag it for the manager', 'Delete it from the records', 'Add it to income'],
         correctAnswerIndex: 1,
-        explanation: 'Personal expenses should be flagged â€” mixing personal and business spending causes accounting problems and potential tax issues.',
+        explanation: 'Personal expenses should be flagged — mixing personal and business spending causes accounting problems and potential tax issues.',
         difficulty: 'medium',
       },
       {
@@ -55,8 +55,8 @@ export const accountingFallbacks: GeneratedScenario[] = [
       },
       {
         id: 'fb_acc1_q5',
-        text: 'The new oven purchase (Â£2,500) is classified as an asset rather than an expense. Why does this matter for the accounts?',
-        options: ['It doesn\'t matter â€” they are treated the same', 'Assets are spread across multiple periods while expenses hit one period', 'Assets always cost more than expenses', 'Expenses need manager approval but assets do not'],
+        text: 'The new oven purchase (£2,500) is classified as an asset rather than an expense. Why does this matter for the accounts?',
+        options: ['It doesn\'t matter — they are treated the same', 'Assets are spread across multiple periods while expenses hit one period', 'Assets always cost more than expenses', 'Expenses need manager approval but assets do not'],
         correctAnswerIndex: 1,
         explanation: 'Assets like equipment are depreciated over their useful life, spreading the cost across multiple accounting periods rather than hitting one month.',
         difficulty: 'hard',
@@ -64,16 +64,17 @@ export const accountingFallbacks: GeneratedScenario[] = [
       {
         id: 'fb_acc1_q6',
         text: 'You notice the bank loan repayment amount differs from last month. What should you do first?',
-        options: ['Change it to match last month', 'Ignore it â€” small differences are normal', 'Check the loan agreement and ask the manager', 'Stop the payment immediately'],
+        options: ['Change it to match last month', 'Ignore it — small differences are normal', 'Check the loan agreement and ask the manager', 'Stop the payment immediately'],
         correctAnswerIndex: 2,
         explanation: 'Differences in expected amounts should always be checked against the source document. Escalate to the manager rather than guessing or making changes.',
         difficulty: 'hard',
       },
     ],
-    bridgeText: 'Well done â€” Sarah is impressed with your sorting. She now asks you to help her read the monthly financial statements to see how the business is performing overall.',
+    bridgeText: 'Well done — Sarah is impressed with your sorting. She now asks you to help her read the monthly financial statements to see how the business is performing overall.',
     variablesUsed: { company_name: 'Bristol Bakes Ltd', company_sector: 'bakery and cafe', unusual_item_type: 'personal expense', manager_name: 'Sarah' },
     generatedAt: '2026-03-01T00:00:00Z',
     isStatic: true,
+    generationSource: 'fallback',
   },
   {
     instanceId: 'fallback_acc_2',
@@ -84,12 +85,12 @@ export const accountingFallbacks: GeneratedScenario[] = [
     taskData: {
       type: 'identify',
       items: [
-        { id: 'pl1', label: 'Revenue â€” Cafe Sales', value: 4800, category: 'Income' },
-        { id: 'pl2', label: 'Revenue â€” Catering Orders', value: 2400, category: 'Income' },
+        { id: 'pl1', label: 'Revenue — Cafe Sales', value: 4800, category: 'Income' },
+        { id: 'pl2', label: 'Revenue — Catering Orders', value: 2400, category: 'Income' },
         { id: 'pl3', label: 'Cost of Goods (Ingredients)', value: 2100, category: 'Expense' },
         { id: 'pl4', label: 'Staff Wages', value: 3200, category: 'Expense' },
         { id: 'pl5', label: 'Utilities', value: 890, category: 'Expense' },
-        { id: 'pl6', label: 'Marketing â€” Social Media', value: 1500, category: 'Expense', metadata: { flag: 'unusually high' } },
+        { id: 'pl6', label: 'Marketing — Social Media', value: 1500, category: 'Expense', metadata: { flag: 'unusually high' } },
         { id: 'pl7', label: 'Rent', value: 1200, category: 'Expense' },
         { id: 'pl8', label: 'Net Profit', value: -690, category: 'Summary' },
       ],
@@ -98,9 +99,9 @@ export const accountingFallbacks: GeneratedScenario[] = [
       {
         id: 'fb_acc2_q1',
         text: 'What is the total revenue for Bristol Bakes Ltd this month?',
-        options: ['Â£4,800', 'Â£7,200', 'Â£2,400', 'Â£9,890'],
+        options: ['£4,800', '£7,200', '£2,400', '£9,890'],
         correctAnswerIndex: 1,
-        explanation: 'Total revenue is Cafe Sales (Â£4,800) + Catering Orders (Â£2,400) = Â£7,200.',
+        explanation: 'Total revenue is Cafe Sales (£4,800) + Catering Orders (£2,400) = £7,200.',
         difficulty: 'easy',
       },
       {
@@ -113,7 +114,7 @@ export const accountingFallbacks: GeneratedScenario[] = [
       },
       {
         id: 'fb_acc2_q3',
-        text: 'The business shows a net loss of Â£690. What does this tell you about the month?',
+        text: 'The business shows a net loss of £690. What does this tell you about the month?',
         options: ['The business is bankrupt', 'Expenses exceeded revenue this month', 'Revenue was lower than last month', 'The accounts have errors'],
         correctAnswerIndex: 1,
         explanation: 'A net loss means total expenses exceeded total revenue. One bad month doesn\'t mean bankruptcy, but the trend needs watching.',
@@ -122,9 +123,9 @@ export const accountingFallbacks: GeneratedScenario[] = [
       {
         id: 'fb_acc2_q4',
         text: 'Which P&L line item would you flag as potentially unusual?',
-        options: ['Staff Wages â€” Â£3,200', 'Rent â€” Â£1,200', 'Marketing â€” Â£1,500', 'Ingredients â€” Â£2,100'],
+        options: ['Staff Wages — £3,200', 'Rent — £1,200', 'Marketing — £1,500', 'Ingredients — £2,100'],
         correctAnswerIndex: 2,
-        explanation: 'Marketing at Â£1,500 is notably high for a small bakery â€” it\'s worth checking whether this was a one-off campaign or a recurring mistake.',
+        explanation: 'Marketing at £1,500 is notably high for a small bakery — it\'s worth checking whether this was a one-off campaign or a recurring mistake.',
         difficulty: 'medium',
       },
       {
@@ -138,31 +139,32 @@ export const accountingFallbacks: GeneratedScenario[] = [
       {
         id: 'fb_acc2_q6',
         text: 'Sarah asks you to recommend one change. What would you advise?',
-        options: ['Close the cafe on quiet days', 'Set a monthly marketing budget cap and review ROI before spending more', 'Borrow money to cover the loss', 'Ignore it â€” one bad month is normal'],
+        options: ['Close the cafe on quiet days', 'Set a monthly marketing budget cap and review ROI before spending more', 'Borrow money to cover the loss', 'Ignore it — one bad month is normal'],
         correctAnswerIndex: 1,
         explanation: 'Setting a budget cap and reviewing return-on-investment is a measured, evidence-based response that addresses the issue without overreacting.',
         difficulty: 'hard',
       },
     ],
-    bridgeText: 'Now that you understand the monthly figures, Sarah wants you to help manage the tax obligations â€” a deadline is approaching and there are a few things to check.',
-    variablesUsed: { company_name: 'Bristol Bakes Ltd', company_sector: 'bakery and cafe', revenue_figure: 'Â£7,200', expense_figure: 'Â£7,890', concern_type: 'unusually high compared to last month' },
+    bridgeText: 'Now that you understand the monthly figures, Sarah wants you to help manage the tax obligations — a deadline is approaching and there are a few things to check.',
+    variablesUsed: { company_name: 'Bristol Bakes Ltd', company_sector: 'bakery and cafe', revenue_figure: '£7,200', expense_figure: '£7,890', concern_type: 'unusually high compared to last month' },
     generatedAt: '2026-03-01T00:00:00Z',
     isStatic: true,
+    generationSource: 'fallback',
   },
   {
     instanceId: 'fallback_acc_3',
     templateId: 'acc_stage_3',
     blockId: 'accounting',
     stageNumber: 3,
-    scenarioBrief: `The 19th January payroll deadline is approaching, and Bristol Bakes Ltd has 5 employees. Sarah needs your help checking that PAYE and National Insurance deductions are correct. A new employee started mid-month and their tax code hasn't been confirmed yet â€” this needs resolving before the submission.`,
+    scenarioBrief: `The 19th January payroll deadline is approaching, and Bristol Bakes Ltd has 5 employees. Sarah needs your help checking that PAYE and National Insurance deductions are correct. A new employee started mid-month and their tax code hasn't been confirmed yet — this needs resolving before the submission.`,
     taskData: {
       type: 'match',
       items: [
         { id: 'tx1', label: 'PAYE (Pay As You Earn)', category: 'Income tax deducted from wages' },
         { id: 'tx2', label: 'Employee NI (National Insurance)', category: 'Employee contribution for state benefits' },
-        { id: 'tx3', label: 'Employer NI', category: 'Employer contribution â€” adds to payroll cost' },
+        { id: 'tx3', label: 'Employer NI', category: 'Employer contribution — adds to payroll cost' },
         { id: 'tx4', label: 'VAT (Value Added Tax)', category: 'Tax on goods and services sold' },
-        { id: 'tx5', label: 'Corporation Tax', category: 'Tax on company profits â€” paid annually' },
+        { id: 'tx5', label: 'Corporation Tax', category: 'Tax on company profits — paid annually' },
       ],
     },
     questions: [
@@ -184,8 +186,8 @@ export const accountingFallbacks: GeneratedScenario[] = [
       },
       {
         id: 'fb_acc3_q3',
-        text: 'An employee earns Â£1,800/month. Using a basic PAYE rate of 20% on taxable income above the personal allowance threshold, approximately how much income tax would be deducted?',
-        options: ['Â£360', 'Â£155', 'Â£0 â€” they are below the threshold', 'Depends on their tax code'],
+        text: 'An employee earns £1,800/month. Using a basic PAYE rate of 20% on taxable income above the personal allowance threshold, approximately how much income tax would be deducted?',
+        options: ['£360', '£155', '£0 — they are below the threshold', 'Depends on their tax code'],
         correctAnswerIndex: 3,
         explanation: 'The exact deduction depends on the employee\'s tax code, which determines their personal allowance. Without a confirmed code, you cannot calculate accurately.',
         difficulty: 'medium',
@@ -193,7 +195,7 @@ export const accountingFallbacks: GeneratedScenario[] = [
       {
         id: 'fb_acc3_q4',
         text: 'The payroll submission deadline is 19th January. If the business misses it, what is the most likely consequence?',
-        options: ['Nothing â€” HMRC allows a grace period', 'An automatic penalty fine from HMRC', 'The employees will not be paid', 'HMRC will close the business account'],
+        options: ['Nothing — HMRC allows a grace period', 'An automatic penalty fine from HMRC', 'The employees will not be paid', 'HMRC will close the business account'],
         correctAnswerIndex: 1,
         explanation: 'Missing PAYE submission deadlines triggers automatic penalties from HMRC, starting with a fixed fine that increases with each late month.',
         difficulty: 'medium',
@@ -209,31 +211,32 @@ export const accountingFallbacks: GeneratedScenario[] = [
       {
         id: 'fb_acc3_q6',
         text: 'You\'re unsure about a VAT reclaim on a supplier invoice. When should you seek professional advice?',
-        options: ['Only if the amount is over Â£1,000', 'Never â€” VAT is straightforward', 'Whenever you are uncertain about the rules or classification', 'Only at year-end'],
+        options: ['Only if the amount is over £1,000', 'Never — VAT is straightforward', 'Whenever you are uncertain about the rules or classification', 'Only at year-end'],
         correctAnswerIndex: 2,
         explanation: 'Seeking professional advice when uncertain prevents costly mistakes. VAT rules can be complex and a wrong reclaim could lead to penalties.',
         difficulty: 'hard',
       },
     ],
-    bridgeText: 'With tax matters under control, Sarah asks you to prepare a summary memo for the business owner â€” bringing together everything you\'ve learned about the company\'s finances this month.',
+    bridgeText: 'With tax matters under control, Sarah asks you to prepare a summary memo for the business owner — bringing together everything you\'ve learned about the company\'s finances this month.',
     variablesUsed: { company_name: 'Bristol Bakes Ltd', company_sector: 'bakery and cafe', deadline_date: '19th January', employee_count: '5', tax_issue: 'new employee tax code not confirmed' },
     generatedAt: '2026-03-01T00:00:00Z',
     isStatic: true,
+    generationSource: 'fallback',
   },
   {
     instanceId: 'fallback_acc_4',
     templateId: 'acc_stage_4',
     blockId: 'accounting',
     stageNumber: 4,
-    scenarioBrief: `The owner of Bristol Bakes Ltd needs to decide between two options: investing Â£5,000 in a new display counter to attract more customers, or keeping the cash as a reserve for unexpected costs over the next quarter. After reviewing transactions, financial statements, and tax obligations, Sarah asks you to write a short recommendation memo. Consider the monthly loss, the marketing overspend, and the upcoming tax deadline.`,
+    scenarioBrief: `The owner of Bristol Bakes Ltd needs to decide between two options: investing £5,000 in a new display counter to attract more customers, or keeping the cash as a reserve for unexpected costs over the next quarter. After reviewing transactions, financial statements, and tax obligations, Sarah asks you to write a short recommendation memo. Consider the monthly loss, the marketing overspend, and the upcoming tax deadline.`,
     taskData: {
       type: 'free-text',
       items: [
-        { id: 'ctx1', label: 'Monthly net position: -Â£690 loss' },
+        { id: 'ctx1', label: 'Monthly net position: -£690 loss' },
         { id: 'ctx2', label: 'Marketing overspend flagged' },
         { id: 'ctx3', label: 'Tax deadline approaching' },
-        { id: 'ctx4', label: 'Option A: Invest Â£5,000 in new display counter' },
-        { id: 'ctx5', label: 'Option B: Keep Â£5,000 as cash reserve' },
+        { id: 'ctx4', label: 'Option A: Invest £5,000 in new display counter' },
+        { id: 'ctx5', label: 'Option B: Keep £5,000 as cash reserve' },
       ],
       evaluationRubric: {
         criteria: [
@@ -256,7 +259,7 @@ export const accountingFallbacks: GeneratedScenario[] = [
       },
       {
         id: 'fb_acc4_q2',
-        text: 'Given the business made a loss this month, which factor is most important when deciding about the Â£5,000?',
+        text: 'Given the business made a loss this month, which factor is most important when deciding about the £5,000?',
         options: ['What competitors are doing', 'Whether the investment will generate enough extra revenue to cover costs', 'The personal preference of the owner', 'How the money was originally earned'],
         correctAnswerIndex: 1,
         explanation: 'During a loss-making period, any investment must be evaluated against whether it will generate sufficient return to justify the outlay.',
@@ -264,10 +267,10 @@ export const accountingFallbacks: GeneratedScenario[] = [
       },
       {
         id: 'fb_acc4_q3',
-        text: 'What risk does spending Â£5,000 now create, given the tax deadline?',
-        options: ['No risk â€” tax and investment are separate', 'The business might not have enough cash to meet its tax obligations', 'HMRC will prevent the purchase', 'The investment will be tax-deductible so it helps'],
+        text: 'What risk does spending £5,000 now create, given the tax deadline?',
+        options: ['No risk — tax and investment are separate', 'The business might not have enough cash to meet its tax obligations', 'HMRC will prevent the purchase', 'The investment will be tax-deductible so it helps'],
         correctAnswerIndex: 1,
-        explanation: 'Spending cash reserves before a tax deadline creates cashflow risk â€” the business must ensure it can meet all obligations first.',
+        explanation: 'Spending cash reserves before a tax deadline creates cashflow risk — the business must ensure it can meet all obligations first.',
         difficulty: 'hard',
       },
       {
@@ -275,13 +278,14 @@ export const accountingFallbacks: GeneratedScenario[] = [
         text: 'If you recommend keeping the cash reserve, how should you frame it to the owner?',
         options: ['Say the business is failing', 'Frame it as a short-term precaution that allows the investment to happen once finances stabilise', 'Tell them to never invest in anything', 'Blame the marketing overspend'],
         correctAnswerIndex: 1,
-        explanation: 'Professional communication frames a cautious recommendation positively â€” as prudent cash management that defers (not cancels) the investment.',
+        explanation: 'Professional communication frames a cautious recommendation positively — as prudent cash management that defers (not cancels) the investment.',
         difficulty: 'hard',
       },
     ],
-    bridgeText: 'Excellent work. You\'ve completed the full accounting mission for Bristol Bakes Ltd. Your recommendation has been shared with the business owner â€” and Sarah says you\'re ready for more responsibility.',
-    variablesUsed: { company_name: 'Bristol Bakes Ltd', company_sector: 'bakery and cafe', decision_option_a: 'investing Â£5,000 in a new display counter', decision_option_b: 'keeping the cash reserve for unexpected costs' },
+    bridgeText: 'Excellent work. You\'ve completed the full accounting mission for Bristol Bakes Ltd. Your recommendation has been shared with the business owner — and Sarah says you\'re ready for more responsibility.',
+    variablesUsed: { company_name: 'Bristol Bakes Ltd', company_sector: 'bakery and cafe', decision_option_a: 'investing £5,000 in a new display counter', decision_option_b: 'keeping the cash reserve for unexpected costs' },
     generatedAt: '2026-03-01T00:00:00Z',
     isStatic: true,
+    generationSource: 'fallback',
   },
 ];

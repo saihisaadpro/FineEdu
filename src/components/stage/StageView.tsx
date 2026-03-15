@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle, ChevronRight, Loader2, Play, RefreshCw, XCircle } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, BookOpen, CheckCircle, ChevronRight, Loader2, Play, RefreshCw, Sparkles, XCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
@@ -52,6 +52,14 @@ export const StageView: React.FC<StageViewProps> = ({
   const [freeTextResponse, setFreeTextResponse] = useState('');
   const [freeTextPassed, setFreeTextPassed] = useState(false);
   const [pendingBadge, setPendingBadge] = useState<string | null>(null);
+  const [loadingLong, setLoadingLong] = useState(false);
+
+  // Show feedback when scenario generation takes longer than expected
+  useEffect(() => {
+    if (!loading) { setLoadingLong(false); return; }
+    const timer = setTimeout(() => setLoadingLong(true), 5000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   // Ensure we have a block session running
   useEffect(() => {
@@ -173,9 +181,17 @@ export const StageView: React.FC<StageViewProps> = ({
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto py-24 text-center">
+      <div className="max-w-3xl mx-auto py-16 text-center animate-fade-in">
+        <div className="mb-6">
+          <StageProgressArc currentStage={resources.stageNumber} />
+        </div>
         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-        <p className="text-slate-500">Generating your scenario...</p>
+        <h2 className="text-lg font-bold text-slate-900 mb-1">{resources.template.stageTitle}</h2>
+        <p className="text-slate-500 text-sm">
+          {loadingLong
+            ? 'Taking longer than usual \u2014 a standard scenario will load shortly\u2026'
+            : 'Generating your AI scenario\u2026'}
+        </p>
       </div>
     );
   }
@@ -207,14 +223,66 @@ export const StageView: React.FC<StageViewProps> = ({
 
       {/* ── Phase: Brief ─────────────────── */}
       {phase === 'brief' && (
-        <div className="space-y-6" data-tour="scenario-panel">
+        <div className="space-y-6 animate-slide-in-up" data-tour="scenario-panel">
+          {/* Step indicator */}
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px]">1</span>
+            Read the scenario, then start the assessment
+          </div>
           <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center gap-2 mb-3 text-blue-600 text-sm font-bold uppercase tracking-wider">
-              <BookOpen className="w-4 h-4" />
-              Scenario Briefing
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 text-blue-600 text-sm font-bold uppercase tracking-wider">
+                <BookOpen className="w-4 h-4" />
+                Scenario Briefing
+              </div>
+              <span className={clsx(
+                'inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full',
+                scenario.generationSource === 'ai-live'
+                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 border border-blue-200'
+                  : scenario.generationSource === 'ai-cached'
+                    ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 border border-green-200'
+                    : scenario.generationSource === 'fallback-after-error'
+                      ? 'bg-amber-50 text-amber-600 border border-amber-200'
+                      : 'bg-slate-100 text-slate-500',
+              )}>
+                <Sparkles className="w-3 h-3" />
+                {scenario.generationSource === 'ai-live'
+                  ? 'AI-generated unique scenario'
+                  : scenario.generationSource === 'ai-cached'
+                    ? 'AI-generated (cached)'
+                    : scenario.generationSource === 'fallback-after-error'
+                      ? 'Standard scenario (AI unavailable)'
+                      : 'Standard scenario'}
+              </span>
             </div>
             <p className="text-slate-700 leading-relaxed whitespace-pre-line">{scenario.scenarioBrief}</p>
           </section>
+
+          {/* Scenario metadata — expandable for stakeholder demos */}
+          <details className="text-xs text-slate-400">
+            <summary className="cursor-pointer hover:text-slate-600 transition-colors select-none">
+              Scenario Details
+            </summary>
+            <div className="mt-2 bg-slate-50 rounded-lg p-3 space-y-1 border border-slate-200 text-slate-500">
+              <div><span className="font-semibold">Instance:</span> {scenario.instanceId}</div>
+              <div><span className="font-semibold">Template:</span> {scenario.templateId}</div>
+              <div><span className="font-semibold">Generated:</span> {new Date(scenario.generatedAt).toLocaleString()}</div>
+              {Object.keys(scenario.variablesUsed).length > 0 && (
+                <div>
+                  <span className="font-semibold">Variables:</span>{' '}
+                  {Object.entries(scenario.variablesUsed).map(([k, v]) => `${k}=${v}`).join(', ')}
+                </div>
+              )}
+            </div>
+          </details>
+
+          {/* AI generation fallback notice */}
+          {scenario.generationSource === 'fallback-after-error' && (
+            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500" />
+              <span>AI scenario generation was unavailable — this is a curated standard scenario with the same learning outcomes.</span>
+            </div>
+          )}
 
           {/* Task data preview */}
           {scenario.taskData.items.length > 0 && !isFreeTextStage && (
@@ -272,7 +340,7 @@ export const StageView: React.FC<StageViewProps> = ({
 
       {/* ── Phase: Task (Questions) ──────── */}
       {phase === 'task' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-slide-in-up">
           {/* AI-evaluated free-text for Stage 4 */}
           {isFreeTextStage && scenario.taskData.evaluationRubric && (
             <FreeTextWithAIEval
@@ -337,7 +405,7 @@ export const StageView: React.FC<StageViewProps> = ({
 
       {/* ── Phase: Results ───────────────── */}
       {phase === 'results' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-slide-in-up">
           <section className={clsx(
             'rounded-2xl p-8 text-center border',
             stageGatePass ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200',
@@ -378,7 +446,7 @@ export const StageView: React.FC<StageViewProps> = ({
 
       {/* ── Phase: Bridge Narrative ──────── */}
       {phase === 'bridge' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-slide-in-up">
           <BridgeNarrative
             blockId={resources.blockId as import('@/types/content').BlockId}
             fromStage={resources.stageNumber}

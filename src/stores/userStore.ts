@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { Role } from '@/types/roles';
 
-export type Role = 'guest' | 'student' | 'pin_learner' | 'facilitator' | 'lecturer' | 'admin';
+export type { Role } from '@/types/roles';
 
 interface UserState {
   role: Role | null;
@@ -20,28 +22,42 @@ interface UserState {
   logout: () => void;
 }
 
-export const useUserStore = create<UserState>((set) => ({
-  role: null,
-  sessionId: null,
-  pin: null,
-  supabaseUserId: null,
-  isAuthenticated: false,
-  isAnonymous: false,
-  authLoading: true,
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      role: null,
+      sessionId: null,
+      pin: null,
+      supabaseUserId: null,
+      isAuthenticated: false,
+      isAnonymous: false,
+      authLoading: true,
 
-  setRole: (role) => set({ role, isAuthenticated: true }),
-  setSession: (sessionId) => set({ sessionId }),
-  setPin: (pin) => set({ pin }),
-  setSupabaseUserId: (id) => set({ supabaseUserId: id }),
-  setIsAnonymous: (isAnonymous) => set({ isAnonymous }),
-  setAuthLoading: (authLoading) => set({ authLoading }),
-  logout: () => set({
-    role: null,
-    sessionId: null,
-    pin: null,
-    supabaseUserId: null,
-    isAuthenticated: false,
-    isAnonymous: false,
-    authLoading: false,
-  }),
-}));
+      setRole: (role) => set({ role, isAuthenticated: true }),
+      setSession: (sessionId) => set({ sessionId }),
+      setPin: (pin) => set({ pin }),
+      setSupabaseUserId: (id) => set({ supabaseUserId: id }),
+      setIsAnonymous: (isAnonymous) => set({ isAnonymous }),
+      setAuthLoading: (authLoading) => set({ authLoading }),
+      logout: () => set({
+        role: null,
+        sessionId: null,
+        pin: null,
+        supabaseUserId: null,
+        isAuthenticated: false,
+        isAnonymous: false,
+        authLoading: false,
+      }),
+    }),
+    {
+      name: 'wrf-user',
+      partialize: (state) => ({
+        role: state.role,
+        sessionId: state.sessionId,
+        pin: state.pin,
+        isAuthenticated: state.isAuthenticated,
+        isAnonymous: state.isAnonymous,
+      }),
+    },
+  ),
+);

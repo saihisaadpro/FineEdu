@@ -1,139 +1,146 @@
 ﻿import type { ScenarioTemplate, VariablePool } from '@/types/content';
 
-// ── Investment / Future Security Block (Lead: Helen) — 4 Stages ──────
+// ── Investment in Practice Block (Lead: Helen) — 4 Stages ────────────
+// Workplace setting: A small independent financial advisory firm
+// Learner role: New trainee assisting a senior adviser
+// Learning arc: Know the Products → Know the Client → Build a Plan → Hold the Course
 
 export const investmentTemplates: ScenarioTemplate[] = [
   {
     templateId: 'inv_stage_1',
     blockId: 'investment',
     stageNumber: 1,
-    stageTitle: 'Understanding Financial Risk',
-    pedagogicalGoal: 'Understand that all financial choices carry risk and that risk varies by product, time horizon, and personal circumstance',
-    workplaceSetting: 'A community financial wellbeing session in a Bristol library',
-    learnerRole: 'Participant helping a friend make sense of different savings and investment options',
-    taskType: 'Sort 6-8 financial products by risk level (low/medium/high); identify one mismatch between product and goal',
+    stageTitle: 'Understanding the Product Range',
+    pedagogicalGoal: 'Understand the main types of investment and the risk–return spectrum as a professional framework, not a personal dilemma',
+    workplaceSetting: 'A small independent financial advisory firm in the Bristol area',
+    learnerRole: 'New trainee at the firm, learning the product range the firm recommends to clients',
+    taskType: 'Match 4–5 investment products to positions on a risk–return spectrum; explain each in one sentence; explain why the firm offers a range',
     questionPatterns: [
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'risk level identification' },
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'savings vs investment distinction' },
-      { difficulty: 'medium', questionType: 'ordering', focusArea: 'risk spectrum ordering' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'matching product to goal' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'risk tolerance assessment' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'trade-off analysis' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'product type identification' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'risk-return relationship basics' },
+      { difficulty: 'medium', questionType: 'ordering', focusArea: 'risk spectrum positioning' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'why firms offer a product range' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'matching product characteristics to risk level' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'diversification as professional principle' },
     ],
-    promptSkeleton: `Generate a scenario for a community financial wellbeing session.
-{{participant_name}} wants to understand the risk of different options for their {{financial_goal}}.
-They have {{available_amount}} to consider, with a time horizon of {{time_horizon}}.
-Include {{product_count}} financial products varying from low to high risk.
-One product is a poor match: {{mismatch_type}}.
-Generate: scenario_brief, task_data (sort items by risk level),
+    promptSkeleton: `Generate a scenario for a trainee at {{firm_name}}, a {{firm_description}} in the Bristol area.
+The firm recommends {{product_count}} investment products to clients spanning the risk–return spectrum.
+Products include types such as: {{product_types}}.
+Illustrative annual returns: cash 3–5%, bonds 4–7%, equities 7–12%, property 5–9%, balanced 5–8%.
+Include an explicit disclaimer: 'These are illustrative examples used for learning, not financial advice.'
+Generate: scenario_brief, task_data (match products to risk–return spectrum positions),
 6 questions, and bridge_text to Stage 2.`,
     stageGate: {
       minCorrectPercent: 60,
-      requiredConcepts: ['risk-levels', 'product-goal-matching'],
+      requiredConcepts: ['risk-return-spectrum', 'product-range-rationale'],
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'Now that {{participant_name}} understands risk basics, they want to know more about long-term security options like pensions...',
+    bridgeNarrativeTemplate: 'Now that the trainee understands the products, a real client is coming in for a meeting...',
     interactiveComponents: [
-      { component: 'RiskSorter', props: { levels: ['Low', 'Medium', 'High'] } },
+      { component: 'RiskReturnSpectrum', props: { levels: ['Low Risk / Low Return', 'Medium Risk / Medium Return', 'High Risk / High Return'] } },
     ],
   },
   {
     templateId: 'inv_stage_2',
     blockId: 'investment',
     stageNumber: 2,
-    stageTitle: 'Pensions & Long-term Security',
-    pedagogicalGoal: 'Understand how workplace pensions work, employer contributions, and why starting early matters',
-    workplaceSetting: 'A workplace induction session covering employee benefits',
-    learnerRole: 'New employee reviewing pension options during onboarding',
-    taskType: 'Compare 3 pension scenarios with different contribution levels; calculate projected outcomes; identify the employer match',
+    stageTitle: 'Understanding What the Client Needs',
+    pedagogicalGoal: 'Understand suitability: investment advice must fit the specific person. Good advice depends on who you are advising.',
+    workplaceSetting: 'The same financial advisory firm — a client meeting',
+    learnerRole: 'Trainee helping the senior adviser prepare a client fact-find',
+    taskType: 'Review a client profile; complete a simplified fact-find; identify time horizon and risk tolerance; explain why suitability matters',
     questionPatterns: [
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'what is a pension' },
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'employer contribution basics' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'contribution impact over time' },
-      { difficulty: 'medium', questionType: 'matching', focusArea: 'pension terms' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'making the best pension choice' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'early vs late start comparison' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'what a fact-find captures' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'time horizon identification' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'risk tolerance assessment from circumstances' },
+      { difficulty: 'medium', questionType: 'matching', focusArea: 'matching client goals to time horizons' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'why same product suits one client but not another' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'suitability as professional obligation' },
     ],
-    promptSkeleton: `Continue the investment journey.
-{{participant_name}} has started a new job at {{employer_name}} with a salary of {{salary}}.
-The employer offers a pension scheme matching up to {{employer_match_percent}}%.
-Present {{scenario_count}} pension contribution options with different monthly amounts.
-Show projected values over {{projection_years}} years.
-Generate: scenario_brief, task_data with pension comparison items,
+    promptSkeleton: `Continue at {{firm_name}}.
+A client has come in for a meeting: {{client_name}}, a {{client_age}}-year-old {{client_occupation}} earning {{client_income}}.
+They have savings of {{client_savings}}, {{client_pension_status}}, {{client_dependants}}.
+Their goal is {{client_goal}}.
+Present the client profile as a structured card with key facts.
+Generate: scenario_brief, client profile data, fact_find_template,
 6 questions, and bridge_text to Stage 3.`,
     stageGate: {
       minCorrectPercent: 60,
-      requiredConcepts: ['pension-basics', 'employer-contribution'],
+      requiredConcepts: ['time-horizon', 'risk-tolerance', 'suitability'],
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'With a pension plan in place, {{participant_name}} now wants to explore whether other investment options could complement their long-term security...',
+    bridgeNarrativeTemplate: 'The fact-find is done. Now the trainee needs to help think about what to actually recommend...',
     interactiveComponents: [
-      { component: 'PensionComparator', props: { scenarios: 3 } },
+      { component: 'ClientProfileCard', props: { fields: ['age', 'income', 'savings', 'goals', 'dependants'] } },
     ],
   },
   {
     templateId: 'inv_stage_3',
     blockId: 'investment',
     stageNumber: 3,
-    stageTitle: 'Responsible Investment Basics',
-    pedagogicalGoal: 'Understand ESG principles, the difference between ethical and standard funds, and how to evaluate claims',
-    workplaceSetting: 'A community workshop on responsible finance',
-    learnerRole: 'Community member evaluating investment fund options for their pension or ISA',
-    taskType: 'Compare 4 fund descriptions; identify genuine ESG features vs marketing claims; match funds to values',
+    stageTitle: 'Building a Recommendation',
+    pedagogicalGoal: 'Allocate funds across product types to match the client profile, learning diversification as a practical professional principle',
+    workplaceSetting: 'The advisory firm — preparing the recommendation for the client',
+    learnerRole: 'Trainee proposing a portfolio allocation for the senior adviser to review',
+    taskType: 'Using client profile from Stage 2 and products from Stage 1, propose a percentage allocation; explain reasoning; explain diversification',
     questionPatterns: [
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'what ESG stands for' },
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'ethical vs standard fund' },
-      { difficulty: 'medium', questionType: 'matching', focusArea: 'ESG criteria matching' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'greenwashing identification' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'balanced fund evaluation' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'values-aligned decision making' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'what diversification means' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'matching risk level to client' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'why not 100% in one product' },
+      { difficulty: 'medium', questionType: 'matching', focusArea: 'allocation rationale for different profiles' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'adjusting allocation for different time horizons' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'coherence between risk tolerance and allocation' },
     ],
-    promptSkeleton: `Continue the journey.
-{{participant_name}} is considering investment options and has heard about responsible investing.
-Present {{fund_count}} fund descriptions. At least one is {{greenwash_type}}.
-Each fund has different returns, risk levels, and ESG credentials.
-Generate: scenario_brief, task_data (compare/match type with fund items),
-6 questions, and bridge_text to Stage 4.`,
+    promptSkeleton: `Continue at {{firm_name}}.
+Using the client profile from Stage 2 and the product range from Stage 1, the trainee must propose a percentage allocation.
+The client is {{client_summary}} with a {{client_risk_level}} risk tolerance and a {{client_time_horizon}} time horizon.
+Products available: {{products_from_stage_1}}.
+The allocation must sum to 100%.
+Generate: scenario_brief, allocation_template with products,
+evaluation_rubric (coherence, diversification, client match), and bridge_text to Stage 4.`,
     stageGate: {
       minCorrectPercent: 60,
-      requiredConcepts: ['esg-basics', 'greenwashing-awareness'],
+      requiredConcepts: ['diversification', 'client-matched-allocation'],
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'Armed with knowledge about risk, pensions, and responsible options, {{participant_name}} is now ready to build a complete financial resilience plan...',
+    bridgeNarrativeTemplate: 'The recommendation looks solid, but the client calls back the next day worried about a news story...',
     interactiveComponents: [
-      { component: 'FundComparator', props: { fundCount: 4 } },
+      { component: 'AllocationSliders', props: { sumTo: 100, unit: '%' } },
     ],
   },
   {
     templateId: 'inv_stage_4',
     blockId: 'investment',
     stageNumber: 4,
-    stageTitle: 'Building Financial Resilience',
-    pedagogicalGoal: 'Apply all investment knowledge to create a balanced personal financial plan considering risk, time, and values',
-    workplaceSetting: 'A one-to-one financial planning review',
-    learnerRole: 'Person creating a financial resilience plan with guidance from a mentor',
-    taskType: 'Review a scenario with competing priorities; write a free-text financial plan recommendation',
+    stageTitle: 'When Markets Move',
+    pedagogicalGoal: 'Understand that investment professionals help clients stay rational under uncertainty. Short-term volatility does not mean the plan has failed. Patience is a professional principle.',
+    workplaceSetting: 'The advisory firm — handling a worried client call',
+    learnerRole: 'Trainee preparing notes for the senior adviser\'s callback to the client',
+    taskType: 'Explain why markets move; compare selling now versus waiting using illustrative figures; draft three key callback points',
     questionPatterns: [
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'prioritising financial goals' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'emergency fund importance' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'allocating limited resources' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'long-term vs short-term trade-offs' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'why markets sometimes fall' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'paper loss vs realised loss' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'selling vs holding comparison' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'professional communication under uncertainty' },
     ],
-    promptSkeleton: `Final stage.
-{{participant_name}} earns {{income}} per month, has {{debt_situation}}, and wants to achieve {{primary_goal}}.
-They must balance {{competing_priority_a}} with {{competing_priority_b}}.
-The learner should draw on risk, pension, and ESG knowledge from earlier stages.
-Generate: scenario_brief with the full situation, task_data (free-text with rubric),
-4 questions, and concluding bridge_text.`,
+    promptSkeleton: `Final stage at {{firm_name}}.
+A market event has occurred: {{market_event}}.
+The client reacts: {{client_reaction}}.
+Their portfolio was {{portfolio_before}}, now shows {{portfolio_after}}.
+Include a 12-month recovery scenario.
+The trainee must draft three key points for the adviser's callback.
+Include a visible disclaimer: 'This is a learning exercise. Real investment decisions should involve a qualified adviser.'
+Generate: scenario_brief, illustrative_data, question_prompts,
+evaluation_rubric (empathy, factual explanation, no guarantees), and concluding bridge_text.`,
     stageGate: {
       minCorrectPercent: 50,
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'Outstanding work. {{participant_name}} now has a clear financial resilience plan. You\'ve completed the Future Security mission.',
+    bridgeNarrativeTemplate: 'Outstanding work. You\'ve completed the Investment in Practice block. You now understand what working in a financial advisory firm involves.',
     interactiveComponents: [
       { component: 'FreeTextResponse', props: { maxWords: 300, rubricVisible: true } },
     ],
@@ -145,35 +152,31 @@ export const investmentVariables: VariablePool[] = [
     templateId: 'inv_stage_1',
     parameters: [
       {
-        name: 'participant_name',
-        values: [{ id: 'p1', value: 'Jordan' }, { id: 'p2', value: 'Aisha' }, { id: 'p3', value: 'Marcus' }, { id: 'p4', value: 'Cerys' }],
-      },
-      {
-        name: 'financial_goal',
+        name: 'firm_name',
         values: [
-          { id: 'g1', value: 'saving for a house deposit over 5 years' },
-          { id: 'g2', value: 'building an emergency fund over 12 months' },
-          { id: 'g3', value: 'growing money for retirement in 30 years' },
+          { id: 'fn1', value: 'Avon Independent Financial Advisers' },
+          { id: 'fn2', value: 'Clifton Wealth Management' },
+          { id: 'fn3', value: 'Redcliffe Financial Planning' },
         ],
       },
       {
-        name: 'available_amount',
-        values: [{ id: 'a1', value: '£3,000' }, { id: 'a2', value: '£1,500' }, { id: 'a3', value: '£5,000' }],
-      },
-      {
-        name: 'time_horizon',
-        values: [{ id: 'th1', value: '1-2 years' }, { id: 'th2', value: '5-10 years' }, { id: 'th3', value: '20+ years' }],
+        name: 'firm_description',
+        values: [
+          { id: 'fd1', value: 'Bristol-based independent adviser' },
+          { id: 'fd2', value: 'Bath wealth management practice' },
+          { id: 'fd3', value: 'Southwest financial planning firm' },
+        ],
       },
       {
         name: 'product_count',
-        values: [{ id: 'pc1', value: '6' }, { id: 'pc2', value: '7' }, { id: 'pc3', value: '8' }],
+        values: [{ id: 'pc1', value: '4' }, { id: 'pc2', value: '5' }],
       },
       {
-        name: 'mismatch_type',
+        name: 'product_types',
         values: [
-          { id: 'm1', value: 'a high-risk stocks & shares ISA recommended for a 6-month emergency fund' },
-          { id: 'm2', value: 'a fixed-term bond locking money away when it is needed within the year' },
-          { id: 'm3', value: 'a cryptocurrency fund marketed as low-risk for retirement savings' },
+          { id: 'pt1', value: 'Cash ISA, Government bonds, FTSE 100 tracker fund, Commercial property fund, Balanced managed fund' },
+          { id: 'pt2', value: 'Premium bonds, Corporate bonds, Global equity fund, UK REIT, Income fund' },
+          { id: 'pt3', value: 'Cash ISA, Government bonds, Ethical equity fund, Balanced managed fund, Global equity fund' },
         ],
       },
     ],
@@ -182,24 +185,57 @@ export const investmentVariables: VariablePool[] = [
     templateId: 'inv_stage_2',
     parameters: [
       {
-        name: 'employer_name',
-        values: [{ id: 'en1', value: 'Avon Health Trust' }, { id: 'en2', value: 'Bristol City Logistics' }, { id: 'en3', value: 'Redcliffe Retail Group' }],
+        name: 'client_name',
+        values: [{ id: 'cn1', value: 'Sarah' }, { id: 'cn2', value: 'James' }, { id: 'cn3', value: 'Priya' }, { id: 'cn4', value: 'David' }],
       },
       {
-        name: 'salary',
-        values: [{ id: 'sl1', value: '£24,000 per year' }, { id: 'sl2', value: '£28,500 per year' }, { id: 'sl3', value: '£22,000 per year' }],
+        name: 'client_age',
+        values: [{ id: 'ca1', value: '35' }, { id: 'ca2', value: '28' }, { id: 'ca3', value: '50' }, { id: 'ca4', value: '22' }, { id: 'ca5', value: '42' }, { id: 'ca6', value: '55' }],
       },
       {
-        name: 'employer_match_percent',
-        values: [{ id: 'em1', value: '3' }, { id: 'em2', value: '5' }, { id: 'em3', value: '4' }],
+        name: 'client_occupation',
+        values: [
+          { id: 'co1', value: 'teacher with a stable pension' },
+          { id: 'co2', value: 'freelancer with irregular income' },
+          { id: 'co3', value: 'carer returning to work after a break' },
+          { id: 'co4', value: 'graduate in first job' },
+          { id: 'co5', value: 'single parent with modest savings' },
+        ],
       },
       {
-        name: 'scenario_count',
-        values: [{ id: 'sc1', value: '3' }],
+        name: 'client_income',
+        values: [{ id: 'ci1', value: '£32,000' }, { id: 'ci2', value: '£24,000' }, { id: 'ci3', value: '£18,000' }, { id: 'ci4', value: '£45,000' }],
       },
       {
-        name: 'projection_years',
-        values: [{ id: 'py1', value: '20' }, { id: 'py2', value: '30' }, { id: 'py3', value: '25' }],
+        name: 'client_savings',
+        values: [{ id: 'cs1', value: '£12,000' }, { id: 'cs2', value: '£3,500' }, { id: 'cs3', value: '£28,000' }, { id: 'cs4', value: '£2,000' }],
+      },
+      {
+        name: 'client_pension_status',
+        values: [
+          { id: 'cp1', value: 'an existing workplace pension' },
+          { id: 'cp2', value: 'no private pension' },
+          { id: 'cp3', value: 'a small personal pension from a previous job' },
+        ],
+      },
+      {
+        name: 'client_dependants',
+        values: [
+          { id: 'cd1', value: 'no dependants' },
+          { id: 'cd2', value: 'one child aged 8' },
+          { id: 'cd3', value: 'two school-age children' },
+          { id: 'cd4', value: 'an elderly parent they help support' },
+        ],
+      },
+      {
+        name: 'client_goal',
+        values: [
+          { id: 'cg1', value: 'retirement planning — wants to stop working at 60' },
+          { id: 'cg2', value: 'saving for a house deposit within 5 years' },
+          { id: 'cg3', value: 'building a safety net and starting to invest for the first time' },
+          { id: 'cg4', value: 'children\'s education fund needed in about 10 years' },
+          { id: 'cg5', value: 'career break buffer — wants flexibility to reduce hours within 2 years' },
+        ],
       },
     ],
   },
@@ -207,15 +243,30 @@ export const investmentVariables: VariablePool[] = [
     templateId: 'inv_stage_3',
     parameters: [
       {
-        name: 'fund_count',
-        values: [{ id: 'fc1', value: '4' }],
+        name: 'client_summary',
+        values: [
+          { id: 'cs1', value: 'a 35-year-old teacher with £12,000 in savings and a workplace pension' },
+          { id: 'cs2', value: 'a 28-year-old freelancer with £3,500 in savings and no pension' },
+          { id: 'cs3', value: 'a 50-year-old carer returning to work with £28,000 in savings' },
+        ],
       },
       {
-        name: 'greenwash_type',
+        name: 'client_risk_level',
+        values: [{ id: 'rl1', value: 'low' }, { id: 'rl2', value: 'medium' }, { id: 'rl3', value: 'high' }],
+      },
+      {
+        name: 'client_time_horizon',
         values: [
-          { id: 'gw1', value: 'labelled "green" but invested heavily in fossil fuel companies' },
-          { id: 'gw2', value: 'using ESG branding but with no published exclusion criteria' },
-          { id: 'gw3', value: 'claiming carbon neutrality while funding deforestation-linked firms' },
+          { id: 'th1', value: 'short-term (under 3 years)' },
+          { id: 'th2', value: 'medium-term (3–10 years)' },
+          { id: 'th3', value: 'long-term (10+ years)' },
+        ],
+      },
+      {
+        name: 'products_from_stage_1',
+        values: [
+          { id: 'ps1', value: 'Cash ISA, Government bonds, FTSE 100 tracker, Commercial property fund, Balanced managed fund' },
+          { id: 'ps2', value: 'Premium bonds, Corporate bonds, Global equity fund, UK REIT, Income fund' },
         ],
       },
     ],
@@ -224,40 +275,31 @@ export const investmentVariables: VariablePool[] = [
     templateId: 'inv_stage_4',
     parameters: [
       {
-        name: 'income',
-        values: [{ id: 'i1', value: '£1,800' }, { id: 'i2', value: '£2,200' }, { id: 'i3', value: '£1,500' }],
-      },
-      {
-        name: 'debt_situation',
+        name: 'market_event',
         values: [
-          { id: 'ds1', value: '£800 remaining on a credit card' },
-          { id: 'ds2', value: 'no debt but no savings either' },
-          { id: 'ds3', value: '£2,000 in student overdraft' },
+          { id: 'me1', value: 'Stock markets drop 8% in a week after unexpected economic data' },
+          { id: 'me2', value: 'Bond yields spike unexpectedly, causing bond fund values to fall' },
+          { id: 'me3', value: 'Global tech sector sells off sharply on regulatory concerns' },
+          { id: 'me4', value: 'Energy prices cause a broad market dip affecting most funds' },
+          { id: 'me5', value: 'Emerging markets fall on political uncertainty' },
         ],
       },
       {
-        name: 'primary_goal',
+        name: 'client_reaction',
         values: [
-          { id: 'pg1', value: 'save £1,000 for an emergency fund within 6 months' },
-          { id: 'pg2', value: 'start pension contributions as early as possible' },
-          { id: 'pg3', value: 'clear all debt before starting to save' },
+          { id: 'cr1', value: 'Wants to sell everything immediately and move to cash' },
+          { id: 'cr2', value: 'Wants to pause contributions and wait until things settle' },
+          { id: 'cr3', value: 'Asks whether they should invest more while prices are low' },
+          { id: 'cr4', value: 'Wants to switch everything to a \'safer\' product right away' },
         ],
       },
       {
-        name: 'competing_priority_a',
-        values: [
-          { id: 'ca1', value: 'paying off debt quickly' },
-          { id: 'ca2', value: 'building a safety net first' },
-          { id: 'ca3', value: 'taking advantage of employer pension matching now' },
-        ],
+        name: 'portfolio_before',
+        values: [{ id: 'pb1', value: '£10,000' }, { id: 'pb2', value: '£25,000' }, { id: 'pb3', value: '£5,000' }],
       },
       {
-        name: 'competing_priority_b',
-        values: [
-          { id: 'cb1', value: 'starting long-term saving for retirement' },
-          { id: 'cb2', value: 'putting money aside for a housing deposit' },
-          { id: 'cb3', value: 'setting aside money for career development training' },
-        ],
+        name: 'portfolio_after',
+        values: [{ id: 'pa1', value: '£9,200' }, { id: 'pa2', value: '£22,500' }, { id: 'pa3', value: '£4,600' }],
       },
     ],
   },

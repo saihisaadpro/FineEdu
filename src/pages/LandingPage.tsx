@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router';
 import { BookOpen, ChevronRight, GraduationCap, KeyRound, Layout, Layers, Trophy, Users } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useUserStore } from '@/stores/userStore';
+import { supabase } from '@/services/supabase';
+import { hasGDPRConsent } from '@/components/ui/ConsentBanner';
+import { isLearnerRole, ROLE_HOME_ROUTES } from '@/types/roles';
 import { useInView } from '@/hooks/useInView';
 
 /* ── Scroll-reveal wrapper ─────────────────────────────────────────── */
@@ -32,13 +35,30 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const setRole = useUserStore(s => s.setRole);
 
-  const handleLearnerEntry = () => {
+  const handleLearnerEntry = async () => {
+    // Don't overwrite staff roles — redirect to their existing dashboard
+    const currentRole = useUserStore.getState().role;
+    if (currentRole && !isLearnerRole(currentRole)) {
+      navigate(ROLE_HOME_ROUTES[currentRole]);
+      return;
+    }
+    // Ensure an anonymous Supabase session exists so learner data can persist
+    if (hasGDPRConsent()) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        await supabase.auth.signInAnonymously();
+      }
+    }
     setRole('student');
     navigate('/dashboard');
   };
 
   const handleFacilitatorEntry = () => {
-    navigate('/login');
+    navigate('/login?role=facilitator');
+  };
+
+  const handleModuleLeadEntry = () => {
+    navigate('/login?role=module_lead');
   };
 
   return (
@@ -137,9 +157,9 @@ export const LandingPage: React.FC = () => {
               icon: BookOpen,
               colour: 'bg-teal-50 text-teal-600',
               title: 'Module Lead',
-              description: 'Author scenarios and review learner outcomes across cohorts.',
+              description: 'Author scenarios, review AI-generated content, and track learner outcomes for your block.',
               cta: 'Module Lead Login',
-              onClick: handleFacilitatorEntry,
+              onClick: handleModuleLeadEntry,
             },
           ].map((card, i) => (
             <Reveal key={card.title} delay={`${i * 100}ms`}>

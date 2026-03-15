@@ -4,8 +4,8 @@ import type { BlockStats } from '@/components/dashboard/SessionOverview';
 
 const BLOCK_META: Record<string, { label: string; color: string; bgBar: string; fgBar: string }> = {
   accounting:  { label: 'Accounting Essentials', color: 'bg-emerald-500', bgBar: 'bg-emerald-100', fgBar: 'bg-emerald-500' },
-  investment:  { label: 'Future Security',       color: 'bg-blue-500',    bgBar: 'bg-blue-100',    fgBar: 'bg-blue-500' },
-  management:  { label: 'Household Management',  color: 'bg-violet-500',  bgBar: 'bg-violet-100',  fgBar: 'bg-violet-500' },
+  investment:  { label: 'Investment in Practice', color: 'bg-blue-500',    bgBar: 'bg-blue-100',    fgBar: 'bg-blue-500' },
+  management:  { label: 'Corporate Finance',      color: 'bg-violet-500',  bgBar: 'bg-violet-100',  fgBar: 'bg-violet-500' },
   fintech:     { label: 'FinTech & Digital',      color: 'bg-pink-500',    bgBar: 'bg-pink-100',    fgBar: 'bg-pink-500' },
 };
 

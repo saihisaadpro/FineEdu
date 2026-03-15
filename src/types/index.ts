@@ -1,4 +1,6 @@
-export type Role = 'guest' | 'student' | 'pin_learner' | 'facilitator' | 'lecturer' | 'admin';
+export type { Role } from './roles';
+export { ROLES, ROLE_LABELS, ROLE_HOME_ROUTES, LEARNER_ROLES, FACILITATOR_ROLES, MODULE_LEAD_ROLES, ALL_STAFF_ROLES, hasPermission, canAccessFacilitatorDashboard, canAccessModuleLeadDashboard, isLearnerRole, isClientOnlyRole } from './roles';
+export type { Permission, DbRole } from './roles';
 
 export type ModuleId = 'accounting' | 'investment' | 'management' | 'fintech';
 

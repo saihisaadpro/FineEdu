@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Download, RefreshCw, Trash2, UnlockKeyhole } from 'lucide-react';
+import { AlertTriangle, Download, RefreshCw, Trash2, UnlockKeyhole } from 'lucide-react';
 import { clsx } from 'clsx';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
@@ -7,7 +7,9 @@ import { supabase } from '@/services/supabase';
 import { SessionOverview, type FacilitatorStats } from '@/components/dashboard/SessionOverview';
 import { BlockBreakdown } from '@/components/dashboard/BlockBreakdown';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { StuckLearners } from '@/components/dashboard/StuckLearners';
 import { useGateOverrideStore } from '@/stores/gateOverrideStore';
+import { useUserStore } from '@/stores/userStore';
 
 const POLL_INTERVAL = 30_000; // 30s fallback polling
 
@@ -16,8 +18,13 @@ export const FacilitatorDashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showEscalate, setShowEscalate] = useState(false);
+  const [escalateReason, setEscalateReason] = useState('');
+  const [escalateBlock, setEscalateBlock] = useState('accounting');
+  const [escalateStage, setEscalateStage] = useState(1);
   const gateOverride = useGateOverrideStore((s) => s.enabled);
   const toggleGateOverride = useGateOverrideStore((s) => s.toggle);
+  const userId = useUserStore(s => s.supabaseUserId);
 
   const fetchStats = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
@@ -64,7 +71,53 @@ export const FacilitatorDashboardPage: React.FC = () => {
   };
 
   const handleExport = () => {
-    toast.info('Export coming in production — data will be available as CSV');
+    if (!stats) {
+      toast.info('No data to export yet');
+      return;
+    }
+    const rows: string[] = [
+      ['Metric', 'Value'].join(','),
+      ['Sessions Today', String(stats.total_today)].join(','),
+      ['Active Now', String(stats.active_now)].join(','),
+      ['Avg Score (%)', String(stats.avg_score)].join(','),
+      ['Completion Rate (%)', String(stats.completion_rate)].join(','),
+      '',
+      ['Block', 'Starts', 'Completions', 'Completion %', 'Avg XP', 'Avg Score'].join(','),
+      ...(stats.blocks ?? []).map(b =>
+        [b.block_id, b.starts, b.completions, b.completion_pct, b.avg_xp, b.avg_score].join(','),
+      ),
+    ];
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `facilitator-session-summary-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Session summary exported as CSV');
+  };
+
+  const handleEscalate = async () => {
+    if (!escalateReason.trim()) {
+      toast.error('Please describe the issue');
+      return;
+    }
+    try {
+      const { error } = await supabase.from('scenario_reviews').insert({
+        block_id: escalateBlock,
+        stage_number: escalateStage,
+        flagged_by: userId,
+        flagged_by_role: 'facilitator',
+        flag_reason: escalateReason.trim(),
+        status: 'pending',
+      });
+      if (error) throw error;
+      toast.success('Flagged to module leader for review');
+      setShowEscalate(false);
+      setEscalateReason('');
+    } catch {
+      toast.error('Failed to submit flag');
+    }
   };
 
   return (
@@ -78,6 +131,11 @@ export const FacilitatorDashboardPage: React.FC = () => {
       {/* Session Overview (4 stat cards) */}
       <section className="mb-6">
         <SessionOverview stats={stats} loading={loading} />
+      </section>
+
+      {/* Stuck Learner Signals */}
+      <section className="mb-6">
+        <StuckLearners loading={loading} />
       </section>
 
       {/* Main content: Block Breakdown + Activity Feed */}
@@ -168,6 +226,61 @@ export const FacilitatorDashboardPage: React.FC = () => {
               <RefreshCw className={clsx('w-4 h-4 mr-1.5', refreshing && 'animate-spin')} />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
+
+            {/* Escalate to module lead */}
+            <div className="relative">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowEscalate(!showEscalate)}
+                className="w-full sm:w-auto justify-center"
+              >
+                <AlertTriangle className="w-4 h-4 mr-1.5" />
+                <span className="hidden sm:inline">Flag Content</span>
+                <span className="sm:hidden">Flag</span>
+              </Button>
+
+              {showEscalate && (
+                <div className="absolute bottom-full mb-2 right-0 w-80 bg-white rounded-xl shadow-xl border border-slate-200 p-4 z-20 animate-slide-up">
+                  <p className="text-sm font-semibold text-slate-900 mb-3">Flag content to Module Leader</p>
+                  <div className="space-y-2 mb-3">
+                    <div className="flex gap-2">
+                      <select
+                        value={escalateBlock}
+                        onChange={e => setEscalateBlock(e.target.value)}
+                        className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="accounting">Accounting</option>
+                        <option value="investment">Investment</option>
+                        <option value="management">Management</option>
+                        <option value="fintech">FinTech</option>
+                      </select>
+                      <select
+                        value={escalateStage}
+                        onChange={e => setEscalateStage(Number(e.target.value))}
+                        className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 w-20 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        {[1, 2, 3, 4].map(s => <option key={s} value={s}>Stage {s}</option>)}
+                      </select>
+                    </div>
+                    <textarea
+                      placeholder="Describe the issue (e.g. incorrect content, learner complaint)..."
+                      value={escalateReason}
+                      onChange={e => setEscalateReason(e.target.value)}
+                      className="w-full text-xs border border-slate-200 rounded-lg p-2 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="primary" onClick={handleEscalate} className="flex-1 justify-center">
+                      Submit Flag
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setShowEscalate(false)} className="flex-1 justify-center">
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

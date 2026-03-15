@@ -6,8 +6,8 @@ import type { RecentCompletion } from '@/components/dashboard/SessionOverview';
 
 const BLOCK_LABELS: Record<string, string> = {
   accounting: 'Accounting Essentials',
-  investment: 'Future Security',
-  management: 'Household Management',
+  investment: 'Investment in Practice',
+  management: 'Corporate Finance',
   fintech: 'FinTech & Digital',
 };
 

@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { supabase } from '@/services/supabase';
 import { useUserStore } from '@/stores/userStore';
 import { hasGDPRConsent } from '@/components/ui/ConsentBanner';
-import type { Role } from '@/stores/userStore';
+import { isClientOnlyRole } from '@/types/roles';
+import type { Role } from '@/types/roles';
 
 /**
  * Initialises and manages the Supabase auth session.
@@ -11,6 +13,7 @@ import type { Role } from '@/stores/userStore';
  * - GDPR: Does NOT create an anonymous session until consent is given.
  *   The consent banner calls `initAnonymousSession()` after the user accepts.
  * - For authenticated (non-anonymous) users, fetches their profile role.
+ * - Preserves client-only roles (student, pin_learner) that don't exist in the DB.
  * - Handles session expiration by redirecting to the landing page.
  */
 export const useAuth = () => {
@@ -42,6 +45,15 @@ export const useAuth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_OUT') {
+          localStorage.removeItem('demo_role_override');
+          logout();
+          return;
+        }
+
+        // Handle token refresh failure — session has expired and can't be renewed
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          toast.error('Your session has expired. Please log in again.');
+          localStorage.removeItem('demo_role_override');
           logout();
           return;
         }
@@ -51,25 +63,46 @@ export const useAuth = () => {
           setSupabaseUserId(user.id);
           setIsAnonymous(user.is_anonymous ?? false);
 
-          // For non-anonymous users, fetch their role from the profiles table.
-          if (!user.is_anonymous) {
-            // Use setTimeout to avoid deadlock per Supabase docs:
-            // "Do not use other Supabase functions in the callback function"
-            setTimeout(async () => {
+          // Fetch role from profiles for ALL users (including anonymous demo logins).
+          // Use setTimeout to avoid deadlock per Supabase docs:
+          // "Do not use other Supabase functions in the callback function"
+          // authLoading is set to false INSIDE the setTimeout after role
+          // resolution so AuthGuard never sees role=null on a valid session.
+          setTimeout(async () => {
+            try {
               const { data: profile } = await supabase
                 .from('profiles')
                 .select('role')
                 .eq('id', user.id)
                 .maybeSingle();
 
-              if (profile?.role) {
-                setRole(profile.role as Role);
-              }
-            }, 0);
-          }
-        }
+              const dbRole = profile?.role as Role | undefined;
+              const currentRole = useUserStore.getState().role;
 
-        setAuthLoading(false);
+              if (dbRole && dbRole !== 'guest') {
+                // DB has a meaningful role — use it
+                setRole(dbRole);
+                localStorage.removeItem('demo_role_override');
+              } else if (isClientOnlyRole(currentRole)) {
+                // Current role is student or pin_learner (client-only, not in DB).
+                // Preserve it — the user entered via the learner flow.
+              } else {
+                // Fall back to localStorage override (demo login) or DB role
+                const override = localStorage.getItem('demo_role_override') as Role | null;
+                if (override) {
+                  setRole(override);
+                } else if (dbRole) {
+                  setRole(dbRole);
+                }
+              }
+            } finally {
+              setAuthLoading(false);
+            }
+          }, 0);
+        } else {
+          // No user in session — mark loading as done
+          setAuthLoading(false);
+        }
       }
     );
 

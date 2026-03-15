@@ -1,137 +1,155 @@
 ﻿import type { ScenarioTemplate, VariablePool } from '@/types/content';
 
-// ── Household Management Block (Lead: Yan) — 4 Stages ────────────────
+// ── Corporate Finance in Practice Block (Lead: Yan) — 4 Stages ───────
+// Workplace setting: A mid-size UK company that imports goods from overseas suppliers
+// Learner role: New finance intern supporting the finance director during a busy quarter
+// Learning arc: Understand the Flows → Face External Pressure → Find Solutions → Plan Ahead
 
 export const managementTemplates: ScenarioTemplate[] = [
   {
     templateId: 'mgt_stage_1',
     blockId: 'management',
     stageNumber: 1,
-    stageTitle: 'Mastering Household Cashflow',
-    pedagogicalGoal: 'Understand the difference between income and expenditure, categorise essential vs discretionary spending, and map monthly cashflow',
-    workplaceSetting: 'A local budgeting support workshop in a Bristol community centre',
-    learnerRole: 'Workshop participant creating their first household budget',
-    taskType: 'Sort 8-12 household items into essential/discretionary; calculate monthly surplus or deficit; spot one timing risk',
+    stageTitle: 'Mapping the Company\'s Cashflow',
+    pedagogicalGoal: 'Understand corporate cashflow as a timing and planning challenge, distinct from profitability. A company can be profitable on paper but short of cash in practice.',
+    workplaceSetting: 'A mid-size UK company that imports goods from overseas suppliers',
+    learnerRole: 'New finance intern supporting the finance director during a busy quarter',
+    taskType: 'Read a simplified monthly cashflow statement; identify the three largest inflows and outflows; explain why the company can be profitable but cash-short; identify the low point in the monthly cash cycle',
     questionPatterns: [
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'essential vs discretionary' },
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'income identification' },
-      { difficulty: 'medium', questionType: 'ordering', focusArea: 'payment priority ordering' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'surplus/deficit calculation' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'timing risk identification' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'cashflow improvement strategy' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'identifying inflows vs outflows' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'what cashflow means for a business' },
+      { difficulty: 'medium', questionType: 'ordering', focusArea: 'ranking largest cash movements' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'profitable but cash-short explanation' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'identifying the cash low point' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'cashflow timing mismatch consequences' },
     ],
-    promptSkeleton: `Generate a scenario for a household budgeting workshop.
-{{person_name}} earns {{income_amount}} per month from {{income_source}}.
-They have {{item_count}} regular outgoings.
-One payment falls at a difficult time: {{timing_issue}}.
-Generate: scenario_brief, task_data (sort items into essential/discretionary with amounts),
-6 questions, and bridge_text to Stage 2.`,
+    promptSkeleton: `Generate a scenario for a finance intern at {{company_name}}, a {{company_sector}} company in {{company_location}}.
+The company imports from {{source_country}} and pays suppliers in {{supplier_currency}}.
+Monthly revenue is {{revenue_range}} from UK customers.
+Outgoings include supplier payments, wages of {{wages}}, rent of {{rent}}, loan repayments, and VAT.
+The key timing problem is: {{timing_problem}}.
+Render the cashflow statement as a simple table with inflows and outflows by week or fortnight, with a running balance column.
+Include a visual indicator for the cash low point.
+Generate: scenario_brief, cashflow_data, 6 questions, and bridge_text to Stage 2.`,
     stageGate: {
       minCorrectPercent: 60,
-      requiredConcepts: ['essential-vs-discretionary', 'cashflow-timing'],
+      requiredConcepts: ['inflows-vs-outflows', 'cash-timing-gap'],
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'Now that {{person_name}} can see their monthly cashflow clearly, the workshop moves on to handling income that doesn\'t arrive regularly...',
+    bridgeNarrativeTemplate: 'The intern now understands the rhythm. But this month, one of the supplier payments is higher than expected...',
     interactiveComponents: [
-      { component: 'BudgetSorter', props: { categories: ['Essential', 'Discretionary'] } },
+      { component: 'FinancialStatementTable', props: { type: 'cashflow', highlightLowPoint: true } },
     ],
   },
   {
     templateId: 'mgt_stage_2',
     blockId: 'management',
     stageNumber: 2,
-    stageTitle: 'Managing Irregular Income',
-    pedagogicalGoal: 'Learn strategies for budgeting when income varies week to week — smoothing, minimum baselines, and priority stacking',
-    workplaceSetting: 'The same workshop, now focusing on irregular earners',
-    learnerRole: 'Workshop participant who works variable hours or has multiple income sources',
-    taskType: 'Allocate variable income across fixed obligations using a priority stack; identify the minimum viable budget',
+    stageTitle: 'Foreign Exchange Impact',
+    pedagogicalGoal: 'Understand that currency fluctuations directly affect a company\'s costs and see foreign exchange risk as a real, practical business issue rather than an abstract concept',
+    workplaceSetting: 'The same import company — reviewing supplier invoices',
+    learnerRole: 'Finance intern comparing invoices and calculating the impact of exchange rate changes',
+    taskType: 'Compare two invoices for the same order at different exchange rates; calculate extra cost in sterling; explain what "the pound has weakened" means practically; learn hedging concept at a basic level',
     questionPatterns: [
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'variable income basics' },
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'priority stacking concept' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'minimum baseline calculation' },
-      { difficulty: 'medium', questionType: 'ordering', focusArea: 'obligation priority order' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'income smoothing strategies' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'worst-case scenario planning' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'what an exchange rate is' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'impact of currency weakness on import costs' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'calculating GBP cost difference' },
+      { difficulty: 'medium', questionType: 'matching', focusArea: 'matching currency movements to business impacts' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'basic hedging concept' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'FX risk management importance' },
     ],
-    promptSkeleton: `Continue the workshop.
-{{person_name}} now works {{work_pattern}} and earns between {{min_income}} and {{max_income}} per month.
-They have {{fixed_obligation_count}} fixed obligations totalling {{fixed_total}}.
-In a bad month, they fall short by {{shortfall}}.
-Generate: scenario_brief, task_data (allocate items from a priority stack),
-6 questions, and bridge_text to Stage 3.`,
+    promptSkeleton: `Continue at {{company_name}}.
+The company orders goods from {{source_country}} priced in {{supplier_currency}}.
+Show two invoices side by side for the same order: same foreign-currency amount, different GBP equivalents.
+Invoice 1: date {{invoice_1_date}}, rate {{rate_1}}, GBP total calculated.
+Invoice 2: date {{invoice_2_date}}, rate {{rate_2}}, GBP total calculated.
+The rate movement is {{rate_movement}}.
+Include a simple calculator widget for the learner to work out the difference.
+Include a 2–3 sentence hedging introduction in plain English.
+Generate: scenario_brief, invoice_pair, hedging_intro, 6 questions, and bridge_text to Stage 3.`,
     stageGate: {
       minCorrectPercent: 60,
-      requiredConcepts: ['priority-stacking', 'minimum-baseline'],
+      requiredConcepts: ['fx-cost-calculation', 'currency-weakness-meaning'],
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'With a priority stack in place, the workshop now addresses the next challenge — what to do when debt is already part of the picture...',
+    bridgeNarrativeTemplate: 'The FX hit means the company needs to think about whether it has enough cash to cover the rest of the quarter...',
     interactiveComponents: [
-      { component: 'PriorityAllocator', props: { maxCategories: 5 } },
+      { component: 'ComparisonCards', props: { cardCount: 2, showCalculator: true } },
     ],
   },
   {
     templateId: 'mgt_stage_3',
     blockId: 'management',
     stageNumber: 3,
-    stageTitle: 'Debt Awareness & Management',
-    pedagogicalGoal: 'Distinguish between manageable and problem debt; understand priority vs non-priority debts; know where to get free help',
-    workplaceSetting: 'A debt awareness session at a community advice centre',
-    learnerRole: 'Participant reviewing a realistic debt scenario to identify the safest path forward',
-    taskType: 'Sort debts into priority/non-priority; match debts to consequences; identify one action that could make things worse',
+    stageTitle: 'Funding the Shortfall',
+    pedagogicalGoal: 'Evaluate short-term funding options and understand that every funding choice involves trade-offs in cost, speed, and relationship impact',
+    workplaceSetting: 'The same company — the finance director asks for analysis of funding options',
+    learnerRole: 'Finance intern researching and comparing funding options for the shortfall',
+    taskType: 'Compare three funding options with clear cost, speed, and relationship dimensions; recommend one and explain trade-offs; identify consequences of inaction',
     questionPatterns: [
-      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'priority vs non-priority debt' },
-      { difficulty: 'easy', questionType: 'matching', focusArea: 'debt type consequences' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'debt management options' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'avoiding harmful actions' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'negotiating with creditors' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'knowing when to seek help' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'what short-term funding means' },
+      { difficulty: 'easy', questionType: 'multiple-choice', focusArea: 'identifying cost of funding' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'comparing speed vs cost trade-offs' },
+      { difficulty: 'medium', questionType: 'matching', focusArea: 'matching options to trade-off dimensions' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'consequences of doing nothing' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'selecting and justifying best option' },
     ],
-    promptSkeleton: `Continue the session.
-{{person_name}} has {{debt_count}} debts totalling {{total_debt}}.
-These include {{debt_types}}.
-One action they are considering is {{risky_action}}, which could make things worse.
-Generate: scenario_brief, task_data (sort debts by priority with consequences),
-6 questions, and bridge_text to Stage 4.`,
+    promptSkeleton: `Continue at {{company_name}}.
+The company needs short-term funding of approximately {{funding_gap}} to bridge the gap created by the cash timing issue (Stage 1) and the FX cost increase (Stage 2).
+The funding is needed within {{funding_timeline}}.
+Present exactly three funding options:
+Option A: {{option_a}}
+Option B: {{option_b}}
+Option C: {{option_c}}
+Each option must have a clear cost, speed, relationship risk, and approximate GBP impact.
+The do-nothing scenario: {{do_nothing_consequence}}.
+Render the three options as comparison cards with structured fields.
+Generate: scenario_brief, funding options, do_nothing scenario, 6 questions, and bridge_text to Stage 4.`,
     stageGate: {
       minCorrectPercent: 60,
-      requiredConcepts: ['priority-debt', 'free-help-awareness'],
+      requiredConcepts: ['funding-trade-offs', 'do-nothing-consequence'],
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'With debt under control, {{person_name}} is ready to build a longer-term stability plan that brings together everything learned so far...',
+    bridgeNarrativeTemplate: 'The finance director likes the analysis and asks a bigger question: how do we stop this kind of pressure happening every quarter?',
     interactiveComponents: [
-      { component: 'DebtSorter', props: { categories: ['Priority', 'Non-priority'] } },
+      { component: 'ComparisonCards', props: { cardCount: 3, fields: ['cost', 'speed', 'relationship_risk', 'gbp_impact'] } },
     ],
   },
   {
     templateId: 'mgt_stage_4',
     blockId: 'management',
     stageNumber: 4,
-    stageTitle: 'Planning for Stability',
-    pedagogicalGoal: 'Combine cashflow, irregular income, and debt knowledge to build a realistic stability plan with small, achievable steps',
-    workplaceSetting: 'A one-to-one planning session with a household adviser',
-    learnerRole: 'Person creating a 3-month financial stability plan',
-    taskType: 'Review a complex household scenario; write a free-text stability plan recommendation',
+    stageTitle: 'Building a Risk Management Plan',
+    pedagogicalGoal: 'Integrate the three types of financial risk encountered across the block (cashflow timing, currency exposure, funding vulnerability) and propose protective measures. Corporate finance is fundamentally about anticipating and managing uncertainty, not just reacting to it.',
+    workplaceSetting: 'The same company — preparing a summary for the finance director to present to the board',
+    learnerRole: 'Finance intern drafting a risk management summary for the board',
+    taskType: 'Review three risks from Stages 1–3; propose one realistic protective action per risk; explain why risk management matters for employees; draft a short board summary',
     questionPatterns: [
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'combining budgeting strategies' },
-      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'realistic goal setting' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'prioritising competing demands' },
-      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'building sustainable habits' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'identifying the three risk types' },
+      { difficulty: 'medium', questionType: 'multiple-choice', focusArea: 'proposing realistic protective actions' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'connecting risk management to employee wellbeing' },
+      { difficulty: 'hard', questionType: 'multiple-choice', focusArea: 'integrating risks into a coherent plan' },
     ],
-    promptSkeleton: `Final stage.
-{{person_name}} has irregular income of {{income_range}}, {{debt_summary}}, and wants to achieve {{stability_goal}}.
-They must balance {{pressure_a}} with {{pressure_b}}.
-Draw on all previous stage knowledge.
-Generate: scenario_brief, task_data (free-text with rubric),
-4 questions, and concluding bridge_text.`,
+    promptSkeleton: `Final stage at {{company_name}}.
+This stage must pull context from Stages 1–3: the company name, sector, currency pair, cashflow timing issue, FX impact, and funding choice from previous stages.
+The intern must review three risk types:
+1. Cashflow timing risk (from Stage 1)
+2. Foreign exchange exposure (from Stage 2)
+3. Funding vulnerability (from Stage 3)
+For each risk, propose one realistic protective action.
+Explain why financial risk management matters for the company's employees, not just its owners.
+Include a free-text field for the board summary.
+AI evaluation checks: (a) all three risk types identified, (b) proposed actions consistent with the company's situation, (c) summary mentions employees or people, not just financial metrics.
+Generate: scenario_brief, risk_summary, question_prompts, evaluation_rubric, and concluding bridge_text.`,
     stageGate: {
       minCorrectPercent: 50,
       canRetry: true,
       facilitatorOverride: true,
     },
-    bridgeNarrativeTemplate: 'Brilliant work. {{person_name}} now has a clear 3-month stability plan. You\'ve completed the Household Management mission.',
+    bridgeNarrativeTemplate: 'Outstanding work. You\'ve completed the Corporate Finance in Practice block. You now understand what working in a corporate finance team involves.',
     interactiveComponents: [
       { component: 'FreeTextResponse', props: { maxWords: 300, rubricVisible: true } },
     ],
@@ -143,31 +161,75 @@ export const managementVariables: VariablePool[] = [
     templateId: 'mgt_stage_1',
     parameters: [
       {
-        name: 'person_name',
-        values: [{ id: 'p1', value: 'Keisha' }, { id: 'p2', value: 'Tom' }, { id: 'p3', value: 'Fatima' }, { id: 'p4', value: 'Liam' }],
-      },
-      {
-        name: 'income_amount',
-        values: [{ id: 'ia1', value: '£1,400' }, { id: 'ia2', value: '£1,750' }, { id: 'ia3', value: '£1,200' }],
-      },
-      {
-        name: 'income_source',
+        name: 'company_name',
         values: [
-          { id: 'is1', value: 'a part-time retail job' },
-          { id: 'is2', value: 'a zero-hours care work contract' },
-          { id: 'is3', value: 'Universal Credit plus part-time cleaning work' },
+          { id: 'cn1', value: 'Avon Import Solutions Ltd' },
+          { id: 'cn2', value: 'Bristol Trading Company' },
+          { id: 'cn3', value: 'Westgate Distribution Ltd' },
+          { id: 'cn4', value: 'Harbour Goods International' },
         ],
       },
       {
-        name: 'item_count',
-        values: [{ id: 'ic1', value: '8' }, { id: 'ic2', value: '10' }, { id: 'ic3', value: '12' }],
+        name: 'company_sector',
+        values: [
+          { id: 'cs1', value: 'consumer electronics importing from East Asia' },
+          { id: 'cs2', value: 'Italian food products importing' },
+          { id: 'cs3', value: 'textiles importing from India' },
+          { id: 'cs4', value: 'German engineering parts importing' },
+          { id: 'cs5', value: 'Scandinavian furniture distribution' },
+        ],
       },
       {
-        name: 'timing_issue',
+        name: 'company_location',
         values: [
-          { id: 'ti1', value: 'rent is due on the 1st but wages arrive on the 15th' },
-          { id: 'ti2', value: 'council tax and electricity both leave on the same day' },
-          { id: 'ti3', value: 'a quarterly water bill arrives the same week as a car insurance renewal' },
+          { id: 'cl1', value: 'Bristol' },
+          { id: 'cl2', value: 'Bath' },
+          { id: 'cl3', value: 'Gloucester' },
+          { id: 'cl4', value: 'Exeter' },
+        ],
+      },
+      {
+        name: 'source_country',
+        values: [
+          { id: 'sc1', value: 'China' },
+          { id: 'sc2', value: 'Italy' },
+          { id: 'sc3', value: 'India' },
+          { id: 'sc4', value: 'Germany' },
+          { id: 'sc5', value: 'Sweden' },
+        ],
+      },
+      {
+        name: 'supplier_currency',
+        values: [
+          { id: 'cur1', value: 'CNY (Chinese Yuan)' },
+          { id: 'cur2', value: 'EUR (Euro)' },
+          { id: 'cur3', value: 'INR (Indian Rupee)' },
+          { id: 'cur4', value: 'USD (US Dollar)' },
+        ],
+      },
+      {
+        name: 'revenue_range',
+        values: [
+          { id: 'rr1', value: '£80,000–£120,000' },
+          { id: 'rr2', value: '£150,000–£250,000' },
+          { id: 'rr3', value: '£50,000–£90,000' },
+        ],
+      },
+      {
+        name: 'wages',
+        values: [{ id: 'w1', value: '£25,000' }, { id: 'w2', value: '£40,000' }, { id: 'w3', value: '£55,000' }],
+      },
+      {
+        name: 'rent',
+        values: [{ id: 'r1', value: '£3,500' }, { id: 'r2', value: '£5,000' }, { id: 'r3', value: '£7,500' }],
+      },
+      {
+        name: 'timing_problem',
+        values: [
+          { id: 'tp1', value: 'Pays suppliers 30 days before customers pay' },
+          { id: 'tp2', value: 'Seasonal revenue spike in Q4 but fixed costs year-round' },
+          { id: 'tp3', value: 'Large quarterly VAT payment creates a regular dip' },
+          { id: 'tp4', value: 'Bulk stock purchase required before the selling season begins' },
         ],
       },
     ],
@@ -176,32 +238,29 @@ export const managementVariables: VariablePool[] = [
     templateId: 'mgt_stage_2',
     parameters: [
       {
-        name: 'work_pattern',
+        name: 'rate_1',
+        values: [{ id: 'r1a', value: '1 GBP = 1.18 EUR' }, { id: 'r1b', value: '1 GBP = 1.27 USD' }, { id: 'r1c', value: '1 GBP = 9.15 CNY' }],
+      },
+      {
+        name: 'rate_2',
+        values: [{ id: 'r2a', value: '1 GBP = 1.12 EUR' }, { id: 'r2b', value: '1 GBP = 1.20 USD' }, { id: 'r2c', value: '1 GBP = 8.60 CNY' }],
+      },
+      {
+        name: 'rate_movement',
         values: [
-          { id: 'wp1', value: 'variable hours on a zero-hours contract' },
-          { id: 'wp2', value: 'two part-time jobs with different pay dates' },
-          { id: 'wp3', value: 'self-employed with seasonal demand' },
+          { id: 'rm1', value: 'GBP weakened 5% against EUR over the past month' },
+          { id: 'rm2', value: 'GBP weakened 6% against USD over six weeks' },
+          { id: 'rm3', value: 'GBP weakened 3% against CNY following economic data' },
+          { id: 'rm4', value: 'GBP weakened 8% against EUR after political uncertainty' },
         ],
       },
       {
-        name: 'min_income',
-        values: [{ id: 'mi1', value: '£800' }, { id: 'mi2', value: '£950' }, { id: 'mi3', value: '£700' }],
+        name: 'invoice_1_date',
+        values: [{ id: 'id1', value: '1 February 2026' }, { id: 'id2', value: '15 January 2026' }, { id: 'id3', value: '1 March 2026' }],
       },
       {
-        name: 'max_income',
-        values: [{ id: 'xi1', value: '£1,600' }, { id: 'xi2', value: '£1,900' }, { id: 'xi3', value: '£1,400' }],
-      },
-      {
-        name: 'fixed_obligation_count',
-        values: [{ id: 'fo1', value: '5' }, { id: 'fo2', value: '6' }, { id: 'fo3', value: '7' }],
-      },
-      {
-        name: 'fixed_total',
-        values: [{ id: 'ft1', value: '£1,100' }, { id: 'ft2', value: '£950' }, { id: 'ft3', value: '£1,250' }],
-      },
-      {
-        name: 'shortfall',
-        values: [{ id: 'sf1', value: '£300' }, { id: 'sf2', value: '£150' }, { id: 'sf3', value: '£450' }],
+        name: 'invoice_2_date',
+        values: [{ id: 'id4', value: '1 March 2026' }, { id: 'id5', value: '15 February 2026' }, { id: 'id6', value: '1 April 2026' }],
       },
     ],
   },
@@ -209,27 +268,41 @@ export const managementVariables: VariablePool[] = [
     templateId: 'mgt_stage_3',
     parameters: [
       {
-        name: 'debt_count',
-        values: [{ id: 'dc1', value: '3' }, { id: 'dc2', value: '4' }, { id: 'dc3', value: '5' }],
+        name: 'funding_gap',
+        values: [{ id: 'fg1', value: '£15,000' }, { id: 'fg2', value: '£25,000' }, { id: 'fg3', value: '£8,000' }],
       },
       {
-        name: 'total_debt',
-        values: [{ id: 'td1', value: '£3,200' }, { id: 'td2', value: '£5,800' }, { id: 'td3', value: '£2,100' }],
+        name: 'funding_timeline',
+        values: [{ id: 'ft1', value: '2 weeks' }, { id: 'ft2', value: '3 weeks' }, { id: 'ft3', value: '10 days' }],
       },
       {
-        name: 'debt_types',
+        name: 'option_a',
         values: [
-          { id: 'dt1', value: 'council tax arrears, a credit card, and a catalogue account' },
-          { id: 'dt2', value: 'rent arrears, a bank overdraft, and a mobile phone contract debt' },
-          { id: 'dt3', value: 'an energy bill debt, a doorstep loan, and a buy-now-pay-later balance' },
+          { id: 'oa1', value: 'Extend the bank overdraft (interest at 9% APR, fast, no relationship impact)' },
+          { id: 'oa2', value: 'Draw down a small business loan (interest at 7% APR plus arrangement fee, medium speed)' },
         ],
       },
       {
-        name: 'risky_action',
+        name: 'option_b',
         values: [
-          { id: 'ra1', value: 'taking out a payday loan to cover the council tax arrears' },
-          { id: 'ra2', value: 'ignoring letters from the energy company hoping they will stop' },
-          { id: 'ra3', value: 'borrowing from a friend to pay off the catalogue, creating social pressure' },
+          { id: 'ob1', value: 'Negotiate longer payment terms with the supplier (no interest cost, slow, potential relationship strain)' },
+          { id: 'ob2', value: 'Use short-term invoice factoring (fees 1.5–3%, fast, no relationship impact with supplier)' },
+        ],
+      },
+      {
+        name: 'option_c',
+        values: [
+          { id: 'oc1', value: 'Offer customers a 2% discount for early payment (margin reduction, medium speed, improves customer goodwill)' },
+          { id: 'oc2', value: 'Delay a planned equipment purchase (no financial cost, immediate, operational impact on capacity)' },
+        ],
+      },
+      {
+        name: 'do_nothing_consequence',
+        values: [
+          { id: 'dn1', value: 'Cash runs out in 3 weeks and staff wages are delayed' },
+          { id: 'dn2', value: 'Supplier stops shipping and the next customer order cannot be fulfilled' },
+          { id: 'dn3', value: 'The bank calls in the existing overdraft facility' },
+          { id: 'dn4', value: 'A key payment bounces and the company\'s credit rating drops' },
         ],
       },
     ],
@@ -237,44 +310,13 @@ export const managementVariables: VariablePool[] = [
   {
     templateId: 'mgt_stage_4',
     parameters: [
+      // Stage 4 variables carry forward from Stages 1-3 via generated context.
+      // No new variable pools needed — variation comes from the combination of
+      // company sector, source country, currency exposure, and funding situation.
       {
-        name: 'income_range',
+        name: 'risk_types',
         values: [
-          { id: 'ir1', value: '£900-£1,500 per month' },
-          { id: 'ir2', value: '£1,100-£1,800 per month' },
-          { id: 'ir3', value: '£750-£1,300 per month' },
-        ],
-      },
-      {
-        name: 'debt_summary',
-        values: [
-          { id: 'ds1', value: '£1,500 in priority debt being repaid at £60/month' },
-          { id: 'ds2', value: 'no debt but zero savings' },
-          { id: 'ds3', value: '£800 in non-priority debt on a repayment plan' },
-        ],
-      },
-      {
-        name: 'stability_goal',
-        values: [
-          { id: 'sg1', value: 'build a £500 emergency buffer within 3 months' },
-          { id: 'sg2', value: 'stop using overdraft by the end of month 2' },
-          { id: 'sg3', value: 'have all bills paid on time for 3 consecutive months' },
-        ],
-      },
-      {
-        name: 'pressure_a',
-        values: [
-          { id: 'pa1', value: 'a child needing new school uniform and shoes' },
-          { id: 'pa2', value: 'a broken washing machine that needs replacing' },
-          { id: 'pa3', value: 'transport costs increasing due to a change in working hours' },
-        ],
-      },
-      {
-        name: 'pressure_b',
-        values: [
-          { id: 'pb1', value: 'a family birthday celebration that everyone expects' },
-          { id: 'pb2', value: 'a training course that could lead to better-paid work' },
-          { id: 'pb3', value: 'pressure from friends to contribute to a group holiday fund' },
+          { id: 'rt1', value: 'cashflow timing, currency exposure, funding vulnerability' },
         ],
       },
     ],

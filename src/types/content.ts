@@ -1,5 +1,8 @@
 /** Phase 4 — Dynamic Scenario Generation content types */
 
+/** How the scenario was produced. Surfaced in the UI for transparency. */
+export type GenerationSource = 'ai-live' | 'ai-cached' | 'fallback' | 'fallback-after-error' | 'preview';
+
 /** Stage number across all blocks */
 export type StageNumber = 1 | 2 | 3 | 4;
 
@@ -75,10 +78,12 @@ export interface GeneratedScenario {
   variablesUsed: Record<string, string>;
   generatedAt: string;
   isStatic: boolean;
+  /** How this scenario was produced (ai-live, ai-cached, fallback, preview). */
+  generationSource: GenerationSource;
 }
 
 export interface TaskData {
-  type: 'sort' | 'identify' | 'calculate' | 'allocate' | 'match' | 'compare' | 'free-text' | 'review';
+  type: 'sort' | 'identify' | 'calculate' | 'allocate' | 'match' | 'compare' | 'free-text' | 'review' | 'fact-find' | 'table';
   items: TaskItem[];
   correctAnswer?: Record<string, unknown>;
   evaluationRubric?: EvaluationRubric;

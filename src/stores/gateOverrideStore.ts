@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface GateOverrideState {
   /** When true, all stage gates are bypassed (facilitator-only) */
@@ -7,8 +8,15 @@ interface GateOverrideState {
   setEnabled: (v: boolean) => void;
 }
 
-export const useGateOverrideStore = create<GateOverrideState>((set) => ({
-  enabled: false,
-  toggle: () => set((s) => ({ enabled: !s.enabled })),
-  setEnabled: (enabled) => set({ enabled }),
-}));
+export const useGateOverrideStore = create<GateOverrideState>()(
+  persist(
+    (set) => ({
+      enabled: false,
+      toggle: () => set((s) => ({ enabled: !s.enabled })),
+      setEnabled: (enabled) => set({ enabled }),
+    }),
+    {
+      name: 'wrf-gate-override',
+    },
+  ),
+);

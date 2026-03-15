@@ -27,8 +27,8 @@ const bridgeRequestSchema = z.object({
 
 const BLOCK_NAMES: Record<string, string> = {
   accounting: 'Accounting in Practice',
-  investment: 'Future Security & Investment',
-  management: 'Household Financial Management',
+  investment: 'Investment in Practice',
+  management: 'Corporate Finance in Practice',
   fintech: 'Digital Finance & FinTech',
 };
 

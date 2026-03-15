@@ -1,4 +1,5 @@
 import type { ScenarioTemplate, VariablePool, GeneratedScenario, BlockSession } from '@/types/content';
+import { FeatureFlags } from '@/utils/featureFlags';
 
 /**
  * Draw one random value per parameter from the variable pool.
@@ -64,10 +65,10 @@ export const generateScenario = async (
   // Prompt is sent to the backend for generation context
   const _prompt = buildGenerationPrompt(template, drawnVariables, blockSession);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
-  if (!apiUrl) {
-    // No backend configured — use fallback immediately
-    return fallback;
+  const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
+  if (!FeatureFlags.AI_GENERATION || !apiUrl) {
+    // AI generation disabled or no backend configured — use fallback immediately
+    return { ...fallback, generationSource: 'fallback' as const };
   }
 
   try {
@@ -94,10 +95,10 @@ export const generateScenario = async (
 
     if (!validateScenarioSchema(generated)) {
       console.warn('Generated scenario failed schema validation, using fallback');
-      return fallback;
+      return { ...fallback, generationSource: 'fallback-after-error' as const };
     }
 
-    return generated;
+    return { ...(generated as GeneratedScenario), generationSource: 'ai-live' as const };
   } catch (error) {
     // Retry once with a longer timeout
     try {
@@ -124,13 +125,13 @@ export const generateScenario = async (
 
       if (!validateScenarioSchema(generated)) {
         console.warn('Retry: scenario failed validation, using fallback');
-        return fallback;
+        return { ...fallback, generationSource: 'fallback-after-error' as const };
       }
 
-      return generated;
+      return { ...(generated as GeneratedScenario), generationSource: 'ai-live' as const };
     } catch {
       console.error('Scenario generation failed after retry, using fallback:', error);
-      return fallback;
+      return { ...fallback, generationSource: 'fallback-after-error' as const };
     }
   }
 };

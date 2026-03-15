@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation, useSearchParams } from 'react-router';
-import { BookOpen, ChevronRight, Layout, LayoutDashboard, LogOut, Save, UserCircle2 } from 'lucide-react';
+import { BookOpen, ChevronRight, Layout, LayoutDashboard, LogOut, Save, Settings, UserCircle2, Activity } from 'lucide-react';
 import { clsx } from 'clsx';
 import { MODULES } from '@/data/modules';
 import { Module, Topic } from '@/types';
 import { useUserStore } from '@/stores/userStore';
+import { canAccessFacilitatorDashboard, canAccessModuleLeadDashboard, ROLE_LABELS, ALL_STAFF_ROLES } from '@/types/roles';
 import { useAuth } from '@/hooks/useAuth';
 import { SavePinDialog } from '@/components/ui/SavePinDialog';
 import { Toaster } from '@/components/ui/Toaster';
 import { ConsentBanner } from '@/components/ui/ConsentBanner';
 import { DemoOverlay } from '@/components/ui/DemoOverlay';
 import { PWAInstallBanner } from '@/components/ui/PWAInstallBanner';
+import { OfflineBanner } from '@/components/ui/OfflineBanner';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { signOut } from '@/services/auth';
 import { XPBar } from '@/components/gamification/XPBar';
 
@@ -77,6 +80,7 @@ export const RootLayout: React.FC = () => {
   if (!isLoggedIn) {
     return (
       <>
+        <OfflineBanner />
         <Outlet />
         <ConsentBanner onConsent={initAnonymousSession} />
         {demoActive && <DemoOverlay onEnd={() => setDemoActive(false)} />}
@@ -89,6 +93,7 @@ export const RootLayout: React.FC = () => {
   if (isAssessment) {
     return (
       <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+        <OfflineBanner />
         <Outlet />
         <Toaster />
       </div>
@@ -97,6 +102,7 @@ export const RootLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-slate-50 text-slate-900 font-sans relative">
+      <OfflineBanner />
       <aside className="w-72 bg-white border-r border-slate-200 hidden md:flex flex-col fixed h-full z-20 shadow-sm">
         <div className="p-6 border-b border-slate-100 flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
@@ -151,8 +157,8 @@ export const RootLayout: React.FC = () => {
         </div>
 
         <div className="p-4 border-t border-slate-100 space-y-3">
-          {/* Facilitator dashboard link — visible only for facilitator/lecturer/admin */}
-          {(userRole === 'facilitator' || userRole === 'lecturer' || userRole === 'admin') && (
+          {/* Facilitator dashboard link — gated by permission */}
+          {canAccessFacilitatorDashboard(userRole) && (
             <button
               type="button"
               data-tour="facilitator-link"
@@ -168,6 +174,38 @@ export const RootLayout: React.FC = () => {
               Facilitator Dashboard
             </button>
           )}
+          {/* Module lead dashboard link — gated by permission */}
+          {canAccessModuleLeadDashboard(userRole) && (
+            <button
+              type="button"
+              onClick={() => navigate('/module-lead')}
+              className={clsx(
+                'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors',
+                location.pathname === '/module-lead'
+                  ? 'bg-teal-50 text-teal-700 border border-teal-200'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+              )}
+            >
+              <Settings className="w-4 h-4" />
+              Module Lead Dashboard
+            </button>
+          )}
+          {/* Health check link — any staff role */}
+          {userRole && (ALL_STAFF_ROLES as readonly string[]).includes(userRole) && (
+            <button
+              type="button"
+              onClick={() => navigate('/admin/health')}
+              className={clsx(
+                'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors',
+                location.pathname === '/admin/health'
+                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                  : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600',
+              )}
+            >
+              <Activity className="w-3.5 h-3.5" />
+              System Health
+            </button>
+          )}
           <div data-tour="xp-bar">
             <XPBar />
           </div>
@@ -178,7 +216,7 @@ export const RootLayout: React.FC = () => {
               <UserCircle2 className="w-6 h-6" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-900 capitalize truncate">{userRole === 'lecturer' ? 'Facilitator' : 'Learner'}</p>
+              <p className="text-sm font-bold text-slate-900 capitalize truncate">{userRole ? ROLE_LABELS[userRole] : 'Learner'}</p>
               <p className="text-xs text-slate-500 truncate">Session Active</p>
             </div>
             {/* Save Progress button – only for anonymous learners */}
@@ -215,7 +253,9 @@ export const RootLayout: React.FC = () => {
           </div>
         </div>
 
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
 
       {/* PIN save dialog for anonymous learners */}

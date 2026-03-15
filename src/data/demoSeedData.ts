@@ -6,10 +6,11 @@
 
 export const DEMO_XP = 185;
 
+/** Must match badge IDs in src/data/badges.ts */
 export const DEMO_BADGES: string[] = [
-  'first_stage',
-  'first_block',
-  'streak_3',
+  'first_steps',
+  'explorer',
+  'streak_keeper',
 ];
 
 /** Matches the TopicProgress shape from progressStore (topicId, completed, score, totalQuestions, highestDifficulty, completedAt) */

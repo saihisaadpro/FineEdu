@@ -16,28 +16,28 @@ export const MODULES: Module[] = [
   },
   {
     id: 'investment',
-    title: 'Future Security',
-    description: 'Risk awareness, long-term security, pensions, and responsible investment basics.',
+    title: 'Investment in Practice',
+    description: 'Investment market, risk and return, client suitability, portfolio diversification, and managing market volatility.',
     icon: 'TrendingUp',
     lead: 'Helen',
     topics: [
-      { id: 'inv_1', title: 'Understanding Financial Risk', moduleId: 'investment' },
-      { id: 'inv_2', title: 'Pensions & Long-term Security', moduleId: 'investment' },
-      { id: 'inv_3', title: 'Responsible Investment Basics', moduleId: 'investment' },
-      { id: 'inv_4', title: 'Building Financial Resilience', moduleId: 'investment' },
+      { id: 'inv_1', title: 'Understanding the Product Range', moduleId: 'investment' },
+      { id: 'inv_2', title: 'Understanding What the Client Needs', moduleId: 'investment' },
+      { id: 'inv_3', title: 'Building a Recommendation', moduleId: 'investment' },
+      { id: 'inv_4', title: 'When Markets Move', moduleId: 'investment' },
     ]
   },
   {
     id: 'management',
-    title: 'Household Management',
-    description: 'Household cashflow, irregular income, debt awareness, and financial planning for stability.',
-    icon: 'Briefcase',
+    title: 'Corporate Finance in Practice',
+    description: 'Corporate cashflow, foreign exchange impact, short-term funding decisions, and financial risk management.',
+    icon: 'Building2',
     lead: 'Yan',
     topics: [
-      { id: 'mgt_1', title: 'Mastering Household Cashflow', moduleId: 'management' },
-      { id: 'mgt_2', title: 'Managing Irregular Income', moduleId: 'management' },
-      { id: 'mgt_3', title: 'Debt Awareness & Management', moduleId: 'management' },
-      { id: 'mgt_4', title: 'Planning for Stability', moduleId: 'management' },
+      { id: 'mgt_1', title: 'Mapping the Company\'s Cashflow', moduleId: 'management' },
+      { id: 'mgt_2', title: 'Foreign Exchange Impact', moduleId: 'management' },
+      { id: 'mgt_3', title: 'Funding the Shortfall', moduleId: 'management' },
+      { id: 'mgt_4', title: 'Building a Risk Management Plan', moduleId: 'management' },
     ]
   },
   {

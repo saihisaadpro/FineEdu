@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { clsx } from 'clsx';
 import { Button } from '@/components/ui/Button';
-import { ArrowRight, SkipForward } from 'lucide-react';
+import { ArrowRight, SkipForward, ClipboardCheck } from 'lucide-react';
 import { supabase } from '@/services/supabase';
 import { useUserStore } from '@/stores/userStore';
 import { toast } from 'sonner';
@@ -108,14 +108,17 @@ export const ConfidenceSurvey: React.FC<ConfidenceSurveyProps> = ({
     <div className="max-w-lg mx-auto">
       <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8">
         {/* Header */}
-        <div className="text-center mb-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mb-3">
+            <ClipboardCheck className="w-6 h-6 text-blue-600" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-1">
             {surveyType === 'pre' ? 'Before You Start' : 'Quick Reflection'}
           </p>
-          <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
             How confident do you feel?
           </h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-500 mt-2 max-w-xs mx-auto">
             {surveyType === 'pre'
               ? 'Rate each statement honestly — there are no wrong answers.'
               : 'Rate the same statements now that you\'ve completed the block.'}
@@ -203,14 +206,14 @@ export const ConfidenceSurvey: React.FC<ConfidenceSurveyProps> = ({
           )}
         </div>
 
-        {/* Skip link */}
-        <div className="text-center mt-4">
+        {/* Skip button */}
+        <div className="text-center mt-5 pt-4 border-t border-slate-100">
           <button
             type="button"
             onClick={handleSkip}
-            className="text-xs text-slate-400 hover:text-slate-600 transition-colors inline-flex items-center gap-1"
+            className="text-sm font-medium text-slate-500 hover:text-blue-600 hover:bg-blue-50 border border-slate-300 hover:border-blue-300 rounded-full px-5 py-2 transition-all duration-200 inline-flex items-center gap-1.5"
           >
-            <SkipForward className="w-3 h-3" />
+            <SkipForward className="w-4 h-4" />
             Skip for now
           </button>
         </div>

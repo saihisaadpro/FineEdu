@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { toast } from 'sonner';
 import { MessageCircle, Send, X, Loader2 } from 'lucide-react';
 import { useBlockSessionStore } from '@/stores/blockSessionStore';
+import { FeatureFlags } from '@/utils/featureFlags';
 import type { BlockId, StageNumber } from '@/types/content';
 
 interface ChatMessage {
@@ -42,8 +43,8 @@ export const AIChat: React.FC<AIChatProps> = ({ blockId, stageNumber, scenarioBr
     const trimmed = input.trim();
     if (!trimmed || loading || remaining <= 0) return;
 
-    const apiUrl = import.meta.env.VITE_API_URL;
-    if (!apiUrl || !activeSession) return;
+    const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
+    if (!FeatureFlags.AI_CHAT || !apiUrl || !activeSession) return;
 
     setInput('');
     setMessages((prev) => [...prev, { role: 'user', content: trimmed }]);
